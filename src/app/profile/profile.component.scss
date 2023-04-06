@@ -1,0 +1,39 @@
+.flex-container.flex {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 3vw;
+}
+
+.form-inputs-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2vw;
+    margin-top: 30px;
+}
+
+.inner-grid {
+    display: grid;
+    grid-template-columns: 200px 100px;
+    gap: 25px;
+}
+
+.inner-grid mat-form-field {
+    width: unset;
+}
+
+.submit-btn {
+    margin: 50px 0;
+}
+
+mat-form-field {
+    width: 300px;
+}
+
+.form-field {
+    margin: 25px 0 50px;
+}
+
+.form-field span {
+    display: block;
+    padding-bottom: 10px;
+}

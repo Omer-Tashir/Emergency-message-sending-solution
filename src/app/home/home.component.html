@@ -1,0 +1,13 @@
+<app-toolbar></app-toolbar>
+
+<div class="main-section header" [@fadeInOnEnter] [@fadeOutOnLeave]>
+    <div *ngIf="!!image" class="image" [ngStyle]="{'background-image':'url('+image+')'}"></div>
+    <h1 *ngIf="!!name" class="display-name">hey {{ name }}, how can we help u?</h1>
+</div>
+
+<div class="main-section section" [@fadeInOnEnter] [@fadeOutOnLeave]>
+    <button mat-raised-button [routerLink]="'/dashboard'" color="primary">dashboard</button>
+    <button mat-raised-button [routerLink]="'/profile'" color="primary">profile</button>
+    <button mat-raised-button [routerLink]="'/warning-notifications/history'" color="primary">warning notifications history</button>
+    <button mat-raised-button [routerLink]="'/warning-notifications'" color="primary">warning notifications</button>
+</div>

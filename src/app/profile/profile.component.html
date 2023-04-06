@@ -1,0 +1,44 @@
+<app-toolbar></app-toolbar>
+
+<div class="main-section" [@fadeInOnEnter] [@fadeOutOnLeave]>
+
+  <div class="flex-container" [class.flex]="!!disabledFlag">
+    <div class="flex-container--right">
+      <h1>{{disabledFlag ? admin.name : 'הפרופיל שלי'}}</h1>
+      
+      <section class="form">
+        <div class="inputs-container">
+          <form *ngIf="!!form" [formGroup]="form" autocomplete="new-phone" novalidate fxLayout="column wrap"
+            fxLayoutAlign="center center" fxLayoutGap="10px">
+      
+            <div class="form-inputs-wrapper">
+              <mat-form-field>
+                <input autocomplete="new-phone" matInput type="text" placeholder="שם משתמש" formControlName="username" required>
+              </mat-form-field>
+      
+              <mat-form-field>
+                <input autocomplete="new-phone" matInput type="password" placeholder="סיסמא" formControlName="password" required>
+                <mat-error *ngIf="hasError('password', 'required')">חובה להזין סיסמא</mat-error>
+              </mat-form-field>
+      
+              <mat-form-field>
+                <input autocomplete="new-phone" matInput type="text" placeholder="שם מלא" formControlName="name" required>
+                <mat-error *ngIf="hasError('name', 'required')">חובה להזין שם מלא</mat-error>
+              </mat-form-field>
+            </div>
+          </form>
+      
+          <button *ngIf="!disabledFlag" class="submit-btn" mat-raised-button (click)="submit()" color="primary"
+            [disabled]="!!form && !form.valid">
+            שמור
+          </button>
+        </div>
+      </section>
+    </div>
+    </div>
+    
+    </div>
+
+<mat-card *ngIf="isLoading" class="mat-progress-spinner">
+  <mat-progress-spinner color="primary" mode="indeterminate"></mat-progress-spinner>
+</mat-card>

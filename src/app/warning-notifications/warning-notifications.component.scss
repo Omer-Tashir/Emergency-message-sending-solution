@@ -1,0 +1,16 @@
+.main-section {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 5rem;
+}
+
+.grid {
+    min-height: 350px;
+}
+
+.form-inputs-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1vw;
+    margin: 30px 0 40px;
+}
