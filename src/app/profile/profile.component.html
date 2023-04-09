@@ -2,9 +2,9 @@
 
 <div class="main-section" [@fadeInOnEnter] [@fadeOutOnLeave]>
 
-  <div class="flex-container" [class.flex]="!!disabledFlag">
+  <div class="flex-container">
     <div class="flex-container--right">
-      <h1>{{disabledFlag ? admin.name : 'הפרופיל שלי'}}</h1>
+      <h1>{{user.name}}</h1>
       
       <section class="form">
         <div class="inputs-container">
@@ -28,17 +28,13 @@
             </div>
           </form>
       
-          <button *ngIf="!disabledFlag" class="submit-btn" mat-raised-button (click)="submit()" color="primary"
+          <button class="submit-btn" mat-raised-button (click)="submit()" color="primary"
             [disabled]="!!form && !form.valid">
             שמור
           </button>
         </div>
       </section>
     </div>
-    </div>
+  </div>
     
-    </div>
-
-<mat-card *ngIf="isLoading" class="mat-progress-spinner">
-  <mat-progress-spinner color="primary" mode="indeterminate"></mat-progress-spinner>
-</mat-card>
+</div>

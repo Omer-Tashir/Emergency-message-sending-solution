@@ -1,20 +1,15 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort, Sort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { debounceTime, distinctUntilChanged, filter, finalize, first, map, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { fadeInOnEnterAnimation, fadeInRightOnEnterAnimation, fadeOutOnLeaveAnimation, jackInTheBoxOnEnterAnimation } from 'angular-animations';
 import { Observable, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, finalize, first, map, startWith, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { WarningNotification } from '../model/warning-notification';
-import { WarningNotificationType } from '../model/warning-notification-type';
-import { SuspiciousUser } from '../model/suspicious-user';
-import { Algorithem } from '../services/algorithem';
-import { DataService } from '../services/data-service';
 
-import * as moment from 'moment/moment';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AlertService } from '../core/alerts/alert.service';
+import { WarningNotification } from '../model/warning-notification';
+import { WarningNotificationType } from '../model/warning-notification-type';
+
+import * as moment from 'moment/moment';
 
 @Component({
   selector: 'app-warning-notifications',
@@ -30,7 +25,6 @@ export class WarningNotificationsComponent implements OnInit, AfterViewInit, OnD
   private destroy$ = new Subject<void>();
 
   isLoading = false;
-  //blockForm!: FormGroup;
   warningForm!: FormGroup;
   filteredOptions!: Observable<string[]>;
   suspiciousUsers$!: Observable<string[]>;
@@ -40,7 +34,6 @@ export class WarningNotificationsComponent implements OnInit, AfterViewInit, OnD
   constructor(
     private http: HttpClient,
     private alertService: AlertService,
-    private dataService: DataService,
     private cdref: ChangeDetectorRef
   ) { }
 
@@ -58,28 +51,11 @@ export class WarningNotificationsComponent implements OnInit, AfterViewInit, OnD
     });
   }
 
-  // blockSubmit(): void {
-  //   this.http.post(`http://localhost/emergency-message-sending-solution/send_block.php`, this.blockForm.value).pipe(first()).subscribe(() => {
-  //       this.alertService.ok('success', 'the user was blocked');
-  //   }, error => {
-  //       console.log(error);
-  //       this.alertService.ok('error', 'the user couldn\'t be blocked');
-  //   });
-  // }
-
   warningFormHasError = (controlName: string, errorName: string) => {
     return this.warningForm?.controls[controlName].hasError(errorName);
   };
 
-  // blockFormHasError = (controlName: string, errorName: string) => {
-  //   return this.warningForm?.controls[controlName].hasError(errorName);
-  // };
-
-  private initForms() {
-    // this.blockForm = new FormGroup({
-    //   user_id: new FormControl(null, [Validators.required]),
-    // });
-    
+  private initForms() {    
     this.warningForm = new FormGroup({
       warning_id: new FormControl(null, [Validators.required]),
       user_id: new FormControl(null, [Validators.required]),
@@ -96,15 +72,15 @@ export class WarningNotificationsComponent implements OnInit, AfterViewInit, OnD
   ngOnInit() {
     this.initForms();
 
-    this.suspiciousUsers$ = this.refresh$.pipe(
-      switchMap(() => this.dataService.getWarningNotificationTypes()),
-      tap(types => this.warningNotificationsTypes = types),
-      switchMap(() => this.dataService.getUsers()),
-      map(users => Array.from(new Set(users.map(user => user.user_id)))),
-      tap(users => this.suspiciousUsers = users),
-      takeUntil(this.destroy$),
-      finalize(() => this.cdref.detectChanges())
-    );
+    // this.suspiciousUsers$ = this.refresh$.pipe(
+    //   switchMap(() => this.dataService.getWarningNotificationTypes()),
+    //   tap(types => this.warningNotificationsTypes = types),
+    //   switchMap(() => this.dataService.getUsers()),
+    //   map(users => Array.from(new Set(users.map(user => user.uid)))),
+    //   tap(users => this.suspiciousUsers = users),
+    //   takeUntil(this.destroy$),
+    //   finalize(() => this.cdref.detectChanges())
+    // );
 
     this.filteredOptions = this.warningForm.controls['user_id'].valueChanges.pipe(
       filter(value => !!value),

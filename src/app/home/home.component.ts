@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { fadeInOnEnterAnimation, fadeInRightOnEnterAnimation, fadeOutOnLeaveAnimation, jackInTheBoxOnEnterAnimation } from 'angular-animations';
 import { AuthService } from '../auth/auth.service';
 import { SessionStorageService } from '../core/session-storage-service';
-import { Admin } from '../model/user';
+import { User } from '../model/user';
 
 @Component({
   selector: 'app-home',
@@ -14,11 +14,7 @@ import { Admin } from '../model/user';
 })
 export class HomeComponent implements OnInit {
   logo: string = 'assets/logo.png';
-  loggedIn: boolean = false;
-  photoLoaded = false;
-
-  name!: string;
-  image!: string;
+  user!: User;
 
   constructor(
     private authService: AuthService,
@@ -30,13 +26,9 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const loadUser = this.sessionStorageService.getAdmin();
+    const loadUser = this.sessionStorageService.getItem('user');
     if (!!loadUser) {
-      const admin: Admin = loadUser;
-      this.name = admin.name;
-      this.image = admin.photo;
-      this.photoLoaded = true;
-      this.loggedIn = true;
+      this.user = JSON.parse(loadUser);
     }
   }
 }

@@ -61,9 +61,7 @@ import { LoginComponent } from './auth/login/login.component';
 import { ProfileComponent } from './profile/profile.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { WarningNotificationsComponent } from './warning-notifications/warning-notifications.component';
-import { DashboardCountersComponent } from './dashboard/dashboard-counters/dashboard-counters.component';
 import { WarningNotificationsHistoryComponent } from './warning-notifications-history/warning-notifications-history.component';
-import { ResetPasswordComponent } from './auth/reset-password/reset-password.component';
 
 const CUSTOM_DATE_FORMAT = {
   parse: {
@@ -99,9 +97,7 @@ const CUSTOM_DATE_FORMAT = {
     ProfileComponent,
     WarningNotificationsComponent,
     DashboardComponent,
-    DashboardCountersComponent,
     WarningNotificationsHistoryComponent,
-    ResetPasswordComponent,
   ],
   imports: [
     CommonModule,

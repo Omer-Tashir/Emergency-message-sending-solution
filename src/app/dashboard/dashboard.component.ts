@@ -1,12 +1,9 @@
 import { animate, animateChild, query, stagger, state, style, transition, trigger } from '@angular/animations';
 import { fadeInOnEnterAnimation, fadeInRightOnEnterAnimation, fadeOutOnLeaveAnimation, jackInTheBoxOnEnterAnimation } from 'angular-animations';
-import { AfterViewInit, Component, HostBinding, OnInit } from '@angular/core';
-import { DataService } from '../services/data-service';
+import { Component, HostBinding, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { map, tap } from 'rxjs/operators';
 
 import * as moment from 'moment/moment';
-
 
 @Component({
   selector: 'app-dashboard',
@@ -36,23 +33,22 @@ export class DashboardComponent implements OnInit {
   });
 
   constructor(
-    private dataService: DataService
   ) { }
 
   ngOnInit(): void {
-    this.dataService.getLatestDataDate().subscribe(d => {
-      const date = Object.values(d[0]).map((value: any) => value)[0];
-      this.dateRange.controls['end'].setValue(moment(date));
-      this.dateRange.controls['start'].setValue(moment(date).subtract(1, 'month'));
+    // this.dataService.getLatestDataDate().subscribe(d => {
+    //   const date = Object.values(d[0]).map((value: any) => value)[0];
+    //   this.dateRange.controls['end'].setValue(moment(date));
+    //   this.dateRange.controls['start'].setValue(moment(date).subtract(1, 'month'));
       
-      this.dataStartDate = this.dateRange.get('start')?.value.toDate();
-      this.dataEndDate = this.dateRange.get('end')?.value.toDate();
+    //   this.dataStartDate = this.dateRange.get('start')?.value.toDate();
+    //   this.dataEndDate = this.dateRange.get('end')?.value.toDate();
   
-      this.dataService.getSuspiciousUsers(
-          moment(this.dataStartDate).format('YYYY-MM-DD'),
-          moment(this.dataEndDate).format('YYYY-MM-DD'))
-        .subscribe();
-    });
+    //   this.dataService.getSuspiciousUsers(
+    //       moment(this.dataStartDate).format('YYYY-MM-DD'),
+    //       moment(this.dataEndDate).format('YYYY-MM-DD'))
+    //     .subscribe();
+    // });
   }
 
   @HostBinding('@fadeInUpAllAnimation')

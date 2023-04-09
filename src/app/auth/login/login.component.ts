@@ -47,10 +47,6 @@ export class LoginComponent implements OnInit {
     this.cdref.detectChanges();
   }
 
-  resetPassword(): void {
-    this.router.navigate(['reset-password']);
-  }
-
   hasError = (controlName: string, errorName: string) => {
     return this.formGroup?.controls[controlName].hasError(errorName);
   };
@@ -61,7 +57,8 @@ export class LoginComponent implements OnInit {
     }
 
     if (this.newUser) {
-      this.authService.register(this.formGroup.value);
+      const user = this.formGroup.value;
+      this.authService.register(user.username, user.password, user.name);
     }
     else {
       this.authService.login(

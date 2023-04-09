@@ -4,9 +4,9 @@ import {
   fadeInOnEnterAnimation,
   fadeOutOnLeaveAnimation,
 } from 'angular-animations';
+import { User } from 'src/app/model/user';
 
 import { AuthService } from '../../auth/auth.service';
-import { Admin } from 'src/app/model/admin';
 import { SessionStorageService } from '../session-storage-service';
 
 @Component({
@@ -17,11 +17,7 @@ import { SessionStorageService } from '../session-storage-service';
 })
 export class ToolbarComponent implements OnInit {
   logo: string = 'assets/logo.svg';
-  loggedIn: boolean = false;
-  photoLoaded = false;
-
-  name!: string;
-  image!: string;
+  user!: User;
 
   constructor(
     private authService: AuthService,
@@ -33,13 +29,9 @@ export class ToolbarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const loadUser = this.sessionStorageService.getAdmin();
+    const loadUser = this.sessionStorageService.getItem('user');
     if (!!loadUser) {
-      const admin: Admin = loadUser;
-      this.name = admin.name;
-      this.image = admin.photo;
-      this.photoLoaded = true;
-      this.loggedIn = true;
+      this.user = JSON.parse(loadUser);
     }
   }
 }

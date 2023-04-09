@@ -1,3 +1,7 @@
-<section [@fadeInOnEnter] [@fadeOutOnLeave]>
+<div class="app-content" [@fadeInOnEnter] [@fadeOutOnLeave]>
+
   <router-outlet></router-outlet>
-</section>
+  
+  <footer *ngIf="isUserLoggedIn()">© כל הזכויות שמורות - מערכת הפצת הודעות בעת חירום | פותח על ידי: אמיתי אוירבך, בר יעקבי</footer>
+
+</div>

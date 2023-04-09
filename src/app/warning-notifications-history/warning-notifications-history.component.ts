@@ -7,10 +7,6 @@ import { Observable, Subject } from 'rxjs';
 import { finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { WarningNotification } from '../model/warning-notification';
 import { WarningNotificationType } from '../model/warning-notification-type';
-import { Algorithem } from '../services/algorithem';
-import { DataService } from '../services/data-service';
-
-import * as moment from 'moment/moment';
 
 @Component({
   selector: 'app-warning-notifications-history',
@@ -46,8 +42,6 @@ export class WarningNotificationsHistoryComponent implements OnInit, AfterViewIn
   }
 
   constructor(
-    private algorithem: Algorithem,
-    private dataService: DataService,
     private cdref: ChangeDetectorRef
   ) { }
 
@@ -109,15 +103,15 @@ export class WarningNotificationsHistoryComponent implements OnInit, AfterViewIn
   }
 
   ngOnInit() {
-    this.warningNotifications$ = this.refresh$.pipe(
-      switchMap(() => this.dataService.getWarningNotifications()),
-      tap(warnings => this.dataSource.data = warnings),
-      tap(() => this.sortData({ active: 'id', direction: 'asc' })),
-      switchMap(() => this.dataService.getWarningNotificationTypes()),
-      tap(types => this.warningNotificationTypes = types),
-      takeUntil(this.destroy$),
-      finalize(() => this.cdref.detectChanges())
-    );
+    // this.warningNotifications$ = this.refresh$.pipe(
+    //   switchMap(() => this.dataService.getWarningNotifications()),
+    //   tap(warnings => this.dataSource.data = warnings),
+    //   tap(() => this.sortData({ active: 'id', direction: 'asc' })),
+    //   switchMap(() => this.dataService.getWarningNotificationTypes()),
+    //   tap(types => this.warningNotificationTypes = types),
+    //   takeUntil(this.destroy$),
+    //   finalize(() => this.cdref.detectChanges())
+    // );
   }
 
   ngAfterViewInit() {

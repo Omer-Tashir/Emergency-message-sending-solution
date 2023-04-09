@@ -1,12 +1,12 @@
 <mat-toolbar>
     <div class="navbar">
       <div class="login">
-        <ng-container *ngIf="!!loggedIn">
-          <span *ngIf="!!name" class="display-name">היי {{ name }}</span> |
+        <ng-container *ngIf="!!user">
+          <span *ngIf="!!user.name" class="display-name">היי {{ user.name }}</span> |
           <span class="logout" (click)="logout()">התנתק</span>
         </ng-container>
 
-        <ng-container *ngIf="!loggedIn">
+        <ng-container *ngIf="!user">
           <a class="nav-link" [routerLink]="'/login'">התחבר</a>
           <mat-icon>account_box</mat-icon>
         </ng-container>
@@ -14,7 +14,7 @@
 
       <div class="navbar-links">
         <ul>
-          <ng-container *ngIf="!!loggedIn">
+          <ng-container *ngIf="!!user">
             <li>
               <a [routerLink]="'/dashboard'">dashboard</a>
             </li>

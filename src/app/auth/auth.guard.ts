@@ -9,13 +9,13 @@ import {
   providedIn: 'root',
 })
 export class isLoggedInGuard implements CanActivate {
-  constructor() {}
+  constructor() { }
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
-      !!sessionStorage.getItem('admin') ? resolve(true) : reject();
+      !!sessionStorage.getItem('user') ? resolve(true) : reject();
     });
   }
 }

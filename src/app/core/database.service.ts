@@ -5,7 +5,6 @@ import { catchError, first, map, tap } from 'rxjs/operators';
 import { forkJoin, Observable, of } from 'rxjs';
 
 import { SessionStorageService } from '../core/session-storage-service';
-import { Globals } from '../app.globals';
 import { User } from '../model/user';
 
 @Injectable({
@@ -15,27 +14,36 @@ export class DatabaseService {
 
     constructor(
         private http: HttpClient,
-        private globals: Globals,
         private db: AngularFirestore,
         private sessionStorageService: SessionStorageService
     ) {}
 
     init(): Observable<boolean> {
         return forkJoin([
-            this.getUsers().pipe(first()),
+            this.initUsers().pipe(first()),
         ]).pipe(
             map(results => !!results)
         );
     }
 
-    login(username: string): Observable<boolean> {
-        return this.db.collection(`users`, ref => ref.where('username', '==', username).limit(1)).get().pipe(
-            first(),
-            map(res => !res.empty)
+    login(username: string, password: string): Observable<User> {
+        return this.db.collection(`users`, ref => ref
+                .where('username', '==', username)
+                .where('password', '==', password)
+                .limit(1)
+            ).get().pipe(
+                first(),
+                map(results => results.docs[0]),
+                map(doc => {
+                    const result = <User>doc.data();
+                    result.uid = doc.id;
+                    return result;
+                }),
+                tap(user => this.sessionStorageService.setItem('user', JSON.stringify(user)))
         );
     }
 
-    private getUsers(): Observable<User> {
+    private initUsers(): Observable<User[]> {
         if (!this.sessionStorageService.getItem('users')) {
             return this.db.collection(`users`).get().pipe(
                 map(result => result.docs.map(doc => {
@@ -52,6 +60,11 @@ export class DatabaseService {
         }
     }
 
+    getUser(uid: string): User | undefined {
+        const users: User[] = JSON.parse(this.sessionStorageService.getItem('users'));
+        return users.find(u => u.uid === uid);
+    }
+
     putUser(user: User): Promise<any> {
         return this.db
             .collection(`users`)
@@ -60,8 +73,9 @@ export class DatabaseService {
                 let users = JSON.parse(this.sessionStorageService.getItem('users'));
                 let index = users.findIndex((d: User) => d.uid === user.uid);
                 users[index] = user;
+                this.sessionStorageService.setItem('user', JSON.stringify(user));
                 this.sessionStorageService.setItem('users', JSON.stringify(users));
-            }).then(() => { return user.uid });
+            }).then(() => { return user });
     }
 
     removeUser(user: User): Promise<any> {

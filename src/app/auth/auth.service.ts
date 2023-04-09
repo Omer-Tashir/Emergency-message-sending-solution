@@ -5,8 +5,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { filter, first, map, switchMap, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 
-import { SessionStorageService } from '../core/session-storage-service';
 import { AlertService } from '../core/alerts/alert.service';
+import { DatabaseService } from '../core/database.service';
 import { User } from '../model/user';
 
 @Injectable({
@@ -19,45 +19,37 @@ export class AuthService {
         private db: DatabaseService,
         private afAuth: AngularFireAuth,
         private router: Router,
-        private alertService: AlertService,
-        private sessionStorageService: SessionStorageService,
+        private alertService: AlertService
     ) { }
 
-    login(username: string, password: string) {
+    login(username: string, password: string): void {
         of(this.afAuth.signOut()).pipe(
-            switchMap(() => this.db.login(username)),
+            switchMap(() => this.db.login(username, password)),
             first(),
             tap(res => {
                 if (!res) {
                     this.alertService.ok('שגיאת התחברות', 'לא נמצא משתמש עבור הפרטים שהוזנו');
                 }
             }),
-            filter(res => res),
-            map(() => this.signInWithFireAuth(username, password))
+            filter(res => !!res),
+            map(user => this.signInWithFireAuth(user))
         ).subscribe();
     }
 
-    private signInWithFireAuth(username: string, password: string): void {
+    register(username: string, password: string, name: string): void {
+        of(this.afAuth.signOut()).pipe(
+            switchMap(() => this.db.putUser({username, password, name} as User)),
+            first(),
+            map(user => this.signInWithFireAuth(user))
+        ).subscribe();
+    }
+
+    private signInWithFireAuth(user: User): void {
         this.afAuth
-            .signInWithEmailAndPassword(username, password)
+            .signInWithCustomToken(user.uid)
             .then((auth) => {
-                sessionStorage.setItem('user', JSON.stringify(auth.user));
-
                 this.db.init().pipe(first()).subscribe(() => {
-                    this.users = JSON.parse(this.sessionStorageService.getItem('users'));
-                    const user = this.users.find(a => a.username === username);
-                    sessionStorage.setItem('user', JSON.stringify(user));
-
-                    if (!auth.user?.displayName) {
-                        auth.user?.updateProfile({
-                            displayName: user?.name
-                        }).then(() => {
-                            this.router.navigate(['dashboard']);
-                        });
-                    }
-                    else {
-                        this.router.navigate(['dashboard']);
-                    }
+                    this.router.navigate(['dashboard']);
                 });
             })
             .catch((error: any) => {
