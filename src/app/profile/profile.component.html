@@ -8,22 +8,29 @@
       
       <section class="form">
         <div class="inputs-container">
-          <form *ngIf="!!form" [formGroup]="form" autocomplete="new-phone" novalidate fxLayout="column wrap"
+          <form *ngIf="!!form" [formGroup]="form" novalidate fxLayout="column wrap"
             fxLayoutAlign="center center" fxLayoutGap="10px">
       
             <div class="form-inputs-wrapper">
               <mat-form-field>
-                <input autocomplete="new-phone" matInput type="text" placeholder="שם משתמש" formControlName="username" required>
+                <input matInput type="text" placeholder="מספר עובד" formControlName="username">
               </mat-form-field>
       
               <mat-form-field>
-                <input autocomplete="new-phone" matInput type="password" placeholder="סיסמא" formControlName="password" required>
+                <input matInput type="password" placeholder="סיסמא" formControlName="password">
                 <mat-error *ngIf="hasError('password', 'required')">חובה להזין סיסמא</mat-error>
+                <mat-error *ngIf="hasError('password', 'minlength')">חובה להזין סיסמא בעלת 6 תווים לפחות</mat-error>
               </mat-form-field>
       
               <mat-form-field>
-                <input autocomplete="new-phone" matInput type="text" placeholder="שם מלא" formControlName="name" required>
+                <input matInput type="text" placeholder="שם מלא" formControlName="name">
                 <mat-error *ngIf="hasError('name', 'required')">חובה להזין שם מלא</mat-error>
+              </mat-form-field>
+
+                <mat-form-field>
+                  <input matInput type="email" placeholder="אימייל" formControlName="email">
+                  <mat-error *ngIf="hasError('email', 'email')">כתובת מייל לא תקינה</mat-error>
+                  <mat-error *ngIf="hasError('email', 'required')">חובה להזין כתובת מייל</mat-error>
               </mat-form-field>
             </div>
           </form>

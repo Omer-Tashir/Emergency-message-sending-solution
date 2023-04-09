@@ -3,20 +3,17 @@ import { Router, RouterModule, Routes } from '@angular/router';
 
 import { AuthService } from './auth/auth.service';
 import { isLoggedInGuard } from './auth/auth.guard';
+import { HomeComponent } from './home/home.component';
 import { ProfileComponent } from './profile/profile.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { HomeComponent } from './home/home.component';
-import { WarningNotificationsComponent } from './warning-notifications/warning-notifications.component';
-import { WarningNotificationsHistoryComponent } from './warning-notifications-history/warning-notifications-history.component';
+import { IncidentesComponent } from './incidentes/incidentes.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
-  { path: 'profile', component: ProfileComponent, canActivate: [isLoggedInGuard] },
-  { path: 'profile/:id', component: ProfileComponent, canActivate: [isLoggedInGuard] },
   { path: 'home', component: HomeComponent, canActivate: [isLoggedInGuard] },
-  { path: 'dashboard', component: DashboardComponent, canActivate: [isLoggedInGuard] },
-  { path: 'warning-notifications', component: WarningNotificationsComponent, canActivate: [isLoggedInGuard] },
-  { path: 'warning-notifications/history', component: WarningNotificationsHistoryComponent, canActivate: [isLoggedInGuard] },
+  { path: 'profile', component: ProfileComponent, canActivate: [isLoggedInGuard] },
+  { path: 'incidents', component: IncidentesComponent, canActivate: [isLoggedInGuard] },
+  { path: 'dashboard/:uid', component: DashboardComponent, canActivate: [isLoggedInGuard] },
 ];
 
 @NgModule({

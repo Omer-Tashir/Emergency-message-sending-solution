@@ -16,16 +16,10 @@
         <ul>
           <ng-container *ngIf="!!user">
             <li>
-              <a [routerLink]="'/dashboard'">dashboard</a>
+                <a [routerLink]="'/profile'">איזור אישי</a>
             </li>
             <li>
-                <a [routerLink]="'/profile'">profile</a>
-            </li>
-            <li>
-              <a [routerLink]="'/warning-notifications'">warning notifications</a>
-            </li>
-            <li>
-              <a [routerLink]="'/warning-notifications/history'">warning notifications history</a>
+              <a [routerLink]="'/incidents'">אירועים</a>
             </li>
           </ng-container>
         </ul>
@@ -35,5 +29,6 @@
         <img [src]="logo" class="logo-img" [routerLink]="'/home'" />
       </div>
     </div>
-
 </mat-toolbar>
+
+<div class="toolbar-divider"></div>

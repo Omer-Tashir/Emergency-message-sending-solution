@@ -129,13 +129,13 @@
 }
 
 html {
-  background: #84A24C;
+  background: white;
 }
 
 body {
   margin: auto;
   overflow-x: hidden;
-  --toolbar-height: 64px;
+  --toolbar-height: calc(64px + 44px);
   --swiper-navigation-color: #84A24C;
   --swiper-navigation-size: 30px;
 }
@@ -228,11 +228,6 @@ mat-form-field:-webkit-autofill:focus,
 .mat-form-field.mat-form-field-invalid .mat-form-field-label,
 .mat-form-field.mat-form-field-invalid .mat-form-field-label span {
   color: #f44336 !important;
-}
-
-.mat-select[aria-disabled="true"] span,
-.mat-input-element:disabled {
-  color: #313448;
 }
 
 mat-row.clickable,

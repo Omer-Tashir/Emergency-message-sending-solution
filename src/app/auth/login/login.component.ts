@@ -35,18 +35,24 @@ export class LoginComponent implements OnInit {
   
   toggleNewUser(): void {
     this.newUser = !this.newUser;
-    this.formGroup.reset();
 
     if (this.newUser) {
-      this.formGroup.get('name')?.setValidators(Validators.required);
-      this.formGroup.get('email')?.setValidators([Validators.required, Validators.email]);
+      this.formGroup = new FormGroup({
+        username: new FormControl('', [Validators.required]),
+        password: new FormControl('', [Validators.required, Validators.minLength(6)]),
+        name: new FormControl('', [Validators.required]),
+        email: new FormControl('', [Validators.required, Validators.email]),
+      });
     }
     else {
-      this.formGroup.get('name')?.setValidators(Validators.nullValidator);
-      this.formGroup.get('email')?.setValidators(Validators.nullValidator);
+      this.formGroup = new FormGroup({
+        username: new FormControl('', [Validators.required]),
+        password: new FormControl('', [Validators.required, Validators.minLength(6)]),
+        name: new FormControl('', [Validators.nullValidator]),
+        email: new FormControl('', [Validators.nullValidator]),
+      });
     }
 
-    this.formGroup.updateValueAndValidity({ emitEvent: true });
     this.cdref.detectChanges();
   }
 

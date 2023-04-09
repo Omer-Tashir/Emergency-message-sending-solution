@@ -55,13 +55,12 @@ import { NotFoundSnackComponent } from './core/alerts/not-found-snack.component'
 import { WarningDialogComponent } from './core/warning-dialog/warning-dialog.component';
 
 // Shared presentation components and supporting services
-import { HomeComponent } from './home/home.component';
 import { ToolbarComponent } from './core/toolbar/toolbar.component';
+import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './auth/login/login.component';
 import { ProfileComponent } from './profile/profile.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { WarningNotificationsComponent } from './warning-notifications/warning-notifications.component';
-import { WarningNotificationsHistoryComponent } from './warning-notifications-history/warning-notifications-history.component';
+import { IncidentesComponent } from './incidentes/incidentes.component';
 
 const CUSTOM_DATE_FORMAT = {
   parse: {
@@ -95,9 +94,8 @@ const CUSTOM_DATE_FORMAT = {
     DateTimeFormatPipe,
     TimeFormatPipe,
     ProfileComponent,
-    WarningNotificationsComponent,
     DashboardComponent,
-    WarningNotificationsHistoryComponent,
+    IncidentesComponent,
   ],
   imports: [
     CommonModule,
