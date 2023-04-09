@@ -6,6 +6,7 @@ import { iif, Observable, of, throwError } from 'rxjs';
 
 import { SessionStorageService } from '../core/session-storage-service';
 import { User } from '../model/user';
+import { Incident } from '../model/incident';
 
 @Injectable({
     providedIn: 'root',
@@ -38,11 +39,6 @@ export class DatabaseService {
         );
     }
 
-    getUser(uid: string): User | undefined {
-        const users: User[] = JSON.parse(this.sessionStorageService.getItem('users'));
-        return users.find(u => u.uid === uid);
-    }
-
     putUser(user: User): Promise<any> {
         return this.db
             .collection(`users`)
@@ -73,16 +69,17 @@ export class DatabaseService {
         this.sessionStorageService.setItem('users', JSON.stringify(users));
     }
 
-    removeUser(user: User): Promise<any> {
-        return this.db
-            .collection(`users`)
-            .doc(user.uid)
-            .delete()
-            .then(() => {
-                let users = JSON.parse(this.sessionStorageService.getItem('users')) ?? [];
-                users = users.filter((d: User) => d.uid !== user.uid);
-                this.sessionStorageService.setItem('users', JSON.stringify(users));
-            })
+    getIncidents(): Observable<Incident[]> {
+        return this.db.collection('incidents').get().pipe(
+            first(),
+            map(result => result.docs.map(doc => {
+                const result = <Incident>doc.data();
+                result.uid = doc.id;
+                return result;
+            })),
+            tap(incidents => this.sessionStorageService.setItem('incidents', JSON.stringify(incidents))),
+            catchError(err => of([])),
+        );
     }
 
     getCitiesJSON(): Observable<any> {

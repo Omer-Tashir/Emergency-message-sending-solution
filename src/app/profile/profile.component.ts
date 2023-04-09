@@ -1,13 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
-import {
-  fadeInRightOnEnterAnimation,
-  jackInTheBoxOnEnterAnimation,
-  fadeInOnEnterAnimation,
-  fadeOutOnLeaveAnimation
-} from 'angular-animations';
-;
+import { fadeInOnEnterAnimation } from 'angular-animations';
 import { User } from '../model/user';
 import { DatabaseService } from '../core/database.service';
 import { SessionStorageService } from '../core/session-storage-service';
@@ -19,9 +13,7 @@ import { AlertService } from '../core/alerts/alert.service';
   selector: 'app-profile',
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss'],
-  animations: [fadeInOnEnterAnimation(), fadeOutOnLeaveAnimation(),
-  fadeInRightOnEnterAnimation(), jackInTheBoxOnEnterAnimation()
-  ]
+  animations: [fadeInOnEnterAnimation()]
 })
 export class ProfileComponent implements OnInit {
   user?: User;

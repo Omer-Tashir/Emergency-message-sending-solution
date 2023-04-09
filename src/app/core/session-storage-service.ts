@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Incident } from '../model/incident';
 import { User } from '../model/user';
 
 @Injectable({
@@ -31,6 +32,15 @@ export class SessionStorageService {
     const loadUsers = this.getItem('users');
     if (!!loadUsers) {
       return JSON.parse(loadUsers) as User[];
+    }
+
+    return [];
+  }
+
+  getIncidents(): Incident[] {
+    const loadIncidents = this.getItem('incidents');
+    if (!!loadIncidents) {
+      return JSON.parse(loadIncidents) as Incident[];
     }
 
     return [];

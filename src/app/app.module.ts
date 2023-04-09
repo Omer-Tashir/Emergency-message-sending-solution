@@ -58,8 +58,8 @@ import { WarningDialogComponent } from './core/warning-dialog/warning-dialog.com
 import { ToolbarComponent } from './core/toolbar/toolbar.component';
 import { LoginComponent } from './auth/login/login.component';
 import { ProfileComponent } from './profile/profile.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
 import { IncidentesComponent } from './incidentes/incidentes.component';
+import { IncidentComponent } from './incidentes/incident/incident.component';
 
 const CUSTOM_DATE_FORMAT = {
   parse: {
@@ -92,8 +92,8 @@ const CUSTOM_DATE_FORMAT = {
     DateTimeFormatPipe,
     TimeFormatPipe,
     ProfileComponent,
-    DashboardComponent,
     IncidentesComponent,
+    IncidentComponent,
   ],
   imports: [
     CommonModule,

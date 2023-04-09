@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { fadeInOnEnterAnimation, fadeOutOnLeaveAnimation } from 'angular-animations';
+import { fadeInOnEnterAnimation } from 'angular-animations';
 
 import { SessionStorageService } from './core/session-storage-service';
 import { AlertService } from './core/alerts/alert.service';
@@ -11,10 +11,7 @@ import * as moment from 'moment/moment';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  animations: [
-    fadeInOnEnterAnimation(),
-    fadeOutOnLeaveAnimation()
-  ]
+  animations: [fadeInOnEnterAnimation()]
 })
 export class AppComponent implements OnInit {
 

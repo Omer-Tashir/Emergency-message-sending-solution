@@ -4,14 +4,14 @@ import { Router, RouterModule, Routes } from '@angular/router';
 import { AuthService } from './auth/auth.service';
 import { isLoggedInGuard } from './auth/auth.guard';
 import { ProfileComponent } from './profile/profile.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
 import { IncidentesComponent } from './incidentes/incidentes.component';
+import { IncidentComponent } from './incidentes/incident/incident.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/incidents', pathMatch: 'full' },
   { path: 'profile', component: ProfileComponent, canActivate: [isLoggedInGuard] },
   { path: 'incidents', component: IncidentesComponent, canActivate: [isLoggedInGuard] },
-  { path: 'dashboard/:uid', component: DashboardComponent, canActivate: [isLoggedInGuard] },
+  { path: 'incident/:uid', component: IncidentComponent, canActivate: [isLoggedInGuard] },
 ];
 
 @NgModule({
