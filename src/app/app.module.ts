@@ -56,7 +56,6 @@ import { WarningDialogComponent } from './core/warning-dialog/warning-dialog.com
 
 // Shared presentation components and supporting services
 import { ToolbarComponent } from './core/toolbar/toolbar.component';
-import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './auth/login/login.component';
 import { ProfileComponent } from './profile/profile.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
@@ -79,7 +78,6 @@ const CUSTOM_DATE_FORMAT = {
     AppComponent,
     LoginComponent,
     ToolbarComponent,
-    HomeComponent,
     WarningDialogComponent,
     InvalidRequestSnackComponent,
     ConflictSnackComponent,

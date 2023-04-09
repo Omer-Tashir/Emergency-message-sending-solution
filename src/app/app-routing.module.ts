@@ -3,14 +3,12 @@ import { Router, RouterModule, Routes } from '@angular/router';
 
 import { AuthService } from './auth/auth.service';
 import { isLoggedInGuard } from './auth/auth.guard';
-import { HomeComponent } from './home/home.component';
 import { ProfileComponent } from './profile/profile.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { IncidentesComponent } from './incidentes/incidentes.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/home', pathMatch: 'full' },
-  { path: 'home', component: HomeComponent, canActivate: [isLoggedInGuard] },
+  { path: '', redirectTo: '/incidents', pathMatch: 'full' },
   { path: 'profile', component: ProfileComponent, canActivate: [isLoggedInGuard] },
   { path: 'incidents', component: IncidentesComponent, canActivate: [isLoggedInGuard] },
   { path: 'dashboard/:uid', component: DashboardComponent, canActivate: [isLoggedInGuard] },

@@ -11,6 +11,9 @@ import {
 import { User } from '../model/user';
 import { DatabaseService } from '../core/database.service';
 import { SessionStorageService } from '../core/session-storage-service';
+import { from } from 'rxjs';
+import { delay, first, map, tap } from 'rxjs/operators';
+import { AlertService } from '../core/alerts/alert.service';
 
 @Component({
   selector: 'app-profile',
@@ -26,6 +29,7 @@ export class ProfileComponent implements OnInit {
 
   constructor(
     private db: DatabaseService,
+    private alertService: AlertService,
     private sessionStorageService: SessionStorageService,
   ) {}
 
@@ -41,7 +45,12 @@ export class ProfileComponent implements OnInit {
       ...this.form.value
     } as User;
 
-    this.db.putUser(user);
+    from(this.db.putUser(user)).pipe(
+      first(),
+      tap(() => this.alertService.ok('השינויים נשמרו בהצלחה', 'המערכת טוענת את הנתונים המעודכנים')),
+      delay(3_000),
+      map(() => window.location.reload())
+    ).subscribe();
   }
 
   hasError = (controlName: string, errorName: string) => {
@@ -51,9 +60,9 @@ export class ProfileComponent implements OnInit {
   private initForm() {
     this.form = new FormGroup({
       username: new FormControl({ value: this.user?.username, disabled: true }, [Validators.required]),
-      password: new FormControl({ value: this.user?.password }, [Validators.required, Validators.minLength(6)]),
-      name: new FormControl({ value: this.user?.name }, [Validators.required]),
-      email: new FormControl({ value: this.user?.email }, [Validators.required, Validators.email]),
+      password: new FormControl(this.user?.password, [Validators.required, Validators.minLength(6)]),
+      name: new FormControl(this.user?.name, [Validators.required]),
+      email: new FormControl(this.user?.email, [Validators.required, Validators.email]),
     });
   }
 }

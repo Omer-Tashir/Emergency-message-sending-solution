@@ -33,7 +33,7 @@ export class AuthService {
             }),
             filter(res => !!res),
             map(user => this.signInWithFireAuth(user.email, user.password)),
-            map(() => this.router.navigate(['home'])),
+            map(() => this.router.navigate(['incidents'])),
             catchError(err => {
                 console.log(err);
                 this.alertService.httpError(err);
@@ -47,7 +47,7 @@ export class AuthService {
             switchMap(() => this.signInWithFireAuth(email, password, true)),
             filter(res => !!res),
             switchMap(uid => this.db.putUser({uid, username, password, name, email} as User)),
-            map(() => this.router.navigate(['home'])),
+            map(() => this.router.navigate(['incidents'])),
         ).subscribe();
     }
 
