@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { HttpErrorResponse } from '@angular/common/http';
-import { filter, first, map, switchMap, tap } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { catchError, filter, first, map, switchMap, tap } from 'rxjs/operators';
+import { EMPTY, from, Observable, of } from 'rxjs';
 
 import { AlertService } from '../core/alerts/alert.service';
 import { DatabaseService } from '../core/database.service';
@@ -32,30 +32,51 @@ export class AuthService {
                 }
             }),
             filter(res => !!res),
-            map(user => this.signInWithFireAuth(user))
-        ).subscribe();
-    }
-
-    register(username: string, password: string, name: string): void {
-        of(this.afAuth.signOut()).pipe(
-            switchMap(() => this.db.putUser({username, password, name} as User)),
-            first(),
-            map(user => this.signInWithFireAuth(user))
-        ).subscribe();
-    }
-
-    private signInWithFireAuth(user: User): void {
-        this.afAuth
-            .signInWithCustomToken(user.uid)
-            .then((auth) => {
-                this.db.init().pipe(first()).subscribe(() => {
-                    this.router.navigate(['dashboard']);
-                });
+            map(user => this.signInWithFireAuth(user.email, user.password)),
+            map(() => this.router.navigate(['dashboard'])),
+            catchError(err => {
+                console.log(err);
+                this.alertService.httpError(err);
+                return EMPTY;
             })
-            .catch((error: any) => {
-                console.log(error);
-                this.alertService.httpError(error);
-            });
+        ).subscribe();
+    }
+
+    register(username: string, password: string, name: string, email: string): void {
+        of(this.afAuth.signOut()).pipe(
+            switchMap(() => this.signInWithFireAuth(email, password, true)),
+            filter(res => !!res),
+            switchMap(uid => this.db.putUser({uid, username, password, name, email} as User)),
+            map(() => this.router.navigate(['dashboard'])),
+        ).subscribe();
+    }
+
+    private signInWithFireAuth(email: string, password: string, register?: boolean): Observable<string | undefined> {
+        if (register) {
+            return from(this.afAuth.createUserWithEmailAndPassword(email, password)).pipe(
+                tap(() => from(this.afAuth.signInWithEmailAndPassword(email, password))),
+                map(user => user.user?.uid),
+                catchError(err => {
+                    console.log(err);
+                    if (err?.code === 'auth/email-already-in-use') {
+                        this.alertService.ok('התרחשה שגיאה בעת ההרשמה למערכת', 'העובד כבר רשום למערכת');
+                    }
+                    else {
+                        this.alertService.httpError(err);
+                    }
+                    return of(undefined);
+                })
+            );
+        }
+
+        return from(this.afAuth.signInWithEmailAndPassword(email, password)).pipe(
+            map(user => user.user?.uid),
+            catchError(err => {
+                console.log(err);
+                this.alertService.httpError(err);
+                return of(undefined);
+            })
+        );
     }
 
     logout(error?: HttpErrorResponse | undefined) {

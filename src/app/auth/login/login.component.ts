@@ -27,8 +27,9 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     this.formGroup = new FormGroup({
       username: new FormControl('', [Validators.required]),
-      password: new FormControl('', [Validators.required]),
+      password: new FormControl('', [Validators.required, Validators.minLength(6)]),
       name: new FormControl('', [Validators.nullValidator]),
+      email: new FormControl('', [Validators.nullValidator]),
     });
   }
   
@@ -38,9 +39,11 @@ export class LoginComponent implements OnInit {
 
     if (this.newUser) {
       this.formGroup.get('name')?.setValidators(Validators.required);
+      this.formGroup.get('email')?.setValidators([Validators.required, Validators.email]);
     }
     else {
       this.formGroup.get('name')?.setValidators(Validators.nullValidator);
+      this.formGroup.get('email')?.setValidators(Validators.nullValidator);
     }
 
     this.formGroup.updateValueAndValidity({ emitEvent: true });
@@ -58,7 +61,7 @@ export class LoginComponent implements OnInit {
 
     if (this.newUser) {
       const user = this.formGroup.value;
-      this.authService.register(user.username, user.password, user.name);
+      this.authService.register(user.username, user.password, user.name, user.email);
     }
     else {
       this.authService.login(

@@ -21,7 +21,7 @@ import { SessionStorageService } from '../core/session-storage-service';
   ]
 })
 export class ProfileComponent implements OnInit {
-  user!: User;
+  user?: User;
   form!: FormGroup;
 
   constructor(
@@ -30,13 +30,13 @@ export class ProfileComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.user = JSON.parse(this.sessionStorageService.getItem('user'));
+    this.user = this.sessionStorageService.getLoggedInUser();
     this.initForm();
   }
 
   submit(): void {
     const user = {
-      uid: this.user.uid,
+      uid: this.user?.uid,
       username: this.form.get('username')?.value,
       ...this.form.value
     } as User;
@@ -50,9 +50,9 @@ export class ProfileComponent implements OnInit {
 
   private initForm() {
     this.form = new FormGroup({
-      username: new FormControl({ value: this.user.username, disabled: true }, [Validators.required]),
-      password: new FormControl({ value: this.user.password }, [Validators.required]),
-      name: new FormControl({ value: this.user.name }, [Validators.required]),
+      username: new FormControl({ value: this.user?.username, disabled: true }, [Validators.required]),
+      password: new FormControl({ value: this.user?.password }, [Validators.required]),
+      name: new FormControl({ value: this.user?.name }, [Validators.required]),
     });
   }
 }

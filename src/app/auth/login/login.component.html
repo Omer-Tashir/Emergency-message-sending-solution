@@ -14,7 +14,8 @@
           matInput
           formControlName="username"
           autocomplete="off"
-          spellcheck="false"
+          spellcheck="false" 
+          required
         />
         <mat-error *ngIf="hasError('username', 'required')">חובה להזין מספר עובד</mat-error>
       </mat-form-field>
@@ -29,9 +30,11 @@
           type="password"
           formControlName="password"
           autocomplete="off"
-          spellcheck="false"
+          spellcheck="false" 
+          required
         />
         <mat-error *ngIf="hasError('password', 'required')">חובה להזין סיסמא</mat-error>
+        <mat-error *ngIf="hasError('password', 'minlength')">חובה להזין סיסמא בעלת 6 תווים לפחות</mat-error>
       </mat-form-field>
 
       <mat-form-field *ngIf="newUser">
@@ -43,10 +46,27 @@
           matInput
           formControlName="name"
           autocomplete="off"
-          spellcheck="false"
+          spellcheck="false" 
+          required
         />
         <mat-error *ngIf="hasError('name', 'required')">חובה להזין שם מלא</mat-error>
       </mat-form-field>
+
+      <mat-form-field *ngIf="newUser">
+        <span class="prefix" matPrefix>
+          <mat-icon>email</mat-icon>
+        </span>
+        <mat-label>אימייל</mat-label>
+        <input matInput formControlName="email" type="email" required />
+
+        <mat-error *ngIf="hasError('email', 'required')">
+            חובה להזין אימייל
+        </mat-error>
+
+        <mat-error *ngIf="hasError('email', 'email')">
+            האימייל לא תקין, יש להזין אימייל תקין
+        </mat-error>
+    </mat-form-field>
     </form>
 
     <div class="form-footer">

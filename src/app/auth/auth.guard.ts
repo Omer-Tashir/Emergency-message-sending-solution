@@ -5,17 +5,22 @@ import {
   RouterStateSnapshot,
 } from '@angular/router';
 
+import { SessionStorageService } from '../core/session-storage-service';
+
 @Injectable({
   providedIn: 'root',
 })
 export class isLoggedInGuard implements CanActivate {
-  constructor() { }
+  constructor(
+    private sessionStorageService: SessionStorageService
+  ) { }
+
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
-      !!sessionStorage.getItem('user') ? resolve(true) : reject();
+      !!this.sessionStorageService.getLoggedInUser() ? resolve(true) : reject();
     });
   }
 }

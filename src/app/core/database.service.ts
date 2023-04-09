@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { catchError, first, map, tap } from 'rxjs/operators';
-import { forkJoin, Observable, of } from 'rxjs';
+import { catchError, first, map, switchMap, tap } from 'rxjs/operators';
+import { iif, Observable, of, throwError } from 'rxjs';
 
 import { SessionStorageService } from '../core/session-storage-service';
 import { User } from '../model/user';
@@ -18,14 +18,6 @@ export class DatabaseService {
         private sessionStorageService: SessionStorageService
     ) {}
 
-    init(): Observable<boolean> {
-        return forkJoin([
-            this.initUsers().pipe(first()),
-        ]).pipe(
-            map(results => !!results)
-        );
-    }
-
     login(username: string, password: string): Observable<User> {
         return this.db.collection(`users`, ref => ref
                 .where('username', '==', username)
@@ -33,31 +25,17 @@ export class DatabaseService {
                 .limit(1)
             ).get().pipe(
                 first(),
-                map(results => results.docs[0]),
+                switchMap(results => iif(() => results.docs?.length > 0, of(results.docs[0]), throwError('לא נמצא משתמש עבור פרטי ההתחברות שהוזנו'))),
                 map(doc => {
                     const result = <User>doc.data();
                     result.uid = doc.id;
                     return result;
                 }),
-                tap(user => this.sessionStorageService.setItem('user', JSON.stringify(user)))
+                tap(user => this.sessionStorageService.setItem('user', JSON.stringify(user))),
+                catchError(error => {
+                    throw new Error(error);
+                })
         );
-    }
-
-    private initUsers(): Observable<User[]> {
-        if (!this.sessionStorageService.getItem('users')) {
-            return this.db.collection(`users`).get().pipe(
-                map(result => result.docs.map(doc => {
-                    const result = <User>doc.data();
-                    result.uid = doc.id;
-                    return result;
-                })),
-                tap(result => this.sessionStorageService.setItem('users', JSON.stringify(result))),
-                catchError(err => of([])),
-            );
-        }
-        else {
-            return of(JSON.parse(this.sessionStorageService.getItem('users')));
-        }
     }
 
     getUser(uid: string): User | undefined {
@@ -69,13 +47,30 @@ export class DatabaseService {
         return this.db
             .collection(`users`)
             .doc(user.uid)
-            .set(user).then(() => {
-                let users = JSON.parse(this.sessionStorageService.getItem('users'));
-                let index = users.findIndex((d: User) => d.uid === user.uid);
+            .set(user)
+            .then(() => this.afterPutUser(user))
+            .then(() => { return user });
+    }
+
+    private afterPutUser(user: User): void {
+        let users = [] as User[];
+        const usersStorage = this.sessionStorageService.getItem('users');
+        if (usersStorage) {
+            users = JSON.parse(this.sessionStorageService.getItem('users'));
+            let index = users.findIndex((d: User) => d.uid === user.uid);
+            if (index > -1) {
                 users[index] = user;
-                this.sessionStorageService.setItem('user', JSON.stringify(user));
-                this.sessionStorageService.setItem('users', JSON.stringify(users));
-            }).then(() => { return user });
+            }
+            else {
+                users.push(user);
+            }
+        }
+        else {
+            users.push(user);
+        }
+        
+        this.sessionStorageService.setItem('user', JSON.stringify(user));
+        this.sessionStorageService.setItem('users', JSON.stringify(users));
     }
 
     removeUser(user: User): Promise<any> {
@@ -84,19 +79,17 @@ export class DatabaseService {
             .doc(user.uid)
             .delete()
             .then(() => {
-                let users = JSON.parse(this.sessionStorageService.getItem('users'))?? [];
+                let users = JSON.parse(this.sessionStorageService.getItem('users')) ?? [];
                 users = users.filter((d: User) => d.uid !== user.uid);
                 this.sessionStorageService.setItem('users', JSON.stringify(users));
             })
     }
 
     getCitiesJSON(): Observable<any> {
-        let response = this.http.get("./assets/israel-cities.json");
-        return response
+        return this.http.get("./assets/israel-cities.json");
     }
 
     getStreetsJSON(): Observable<any> {
-        let response = this.http.get("./assets/israel-streets.json");
-        return response
+        return this.http.get("./assets/israel-streets.json");
     }
 }

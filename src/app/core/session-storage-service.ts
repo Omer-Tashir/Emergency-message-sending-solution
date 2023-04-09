@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
+import { User } from '../model/user';
 
 @Injectable({
     providedIn: 'root'
 })
 export class SessionStorageService {
-
-  constructor() { }
 
   public setItem(key: string, value: string) {
     sessionStorage.setItem(key, value);
@@ -17,6 +16,24 @@ export class SessionStorageService {
 
   public removeItem(key:string) {
     sessionStorage.removeItem(key);
+  }
+
+  getLoggedInUser(): User | undefined {
+    const loadUser = this.getItem('user');
+    if (!!loadUser) {
+      return JSON.parse(loadUser) as User;
+    }
+
+    return undefined;
+  }
+
+  getUsers(): User[] {
+    const loadUsers = this.getItem('users');
+    if (!!loadUsers) {
+      return JSON.parse(loadUsers) as User[];
+    }
+
+    return [];
   }
 
   public clear() {

@@ -2,7 +2,7 @@
     <div class="navbar">
       <div class="login">
         <ng-container *ngIf="!!user">
-          <span *ngIf="!!user.name" class="display-name">היי {{ user.name }}</span> |
+          <span *ngIf="!!user?.name" class="display-name">היי {{ user?.name }}</span> |
           <span class="logout" (click)="logout()">התנתק</span>
         </ng-container>
 

@@ -16,8 +16,8 @@ import { SessionStorageService } from '../session-storage-service';
   animations: [fadeInOnEnterAnimation(), fadeOutOnLeaveAnimation()],
 })
 export class ToolbarComponent implements OnInit {
-  logo: string = 'assets/logo.svg';
-  user!: User;
+  logo: string = 'assets/logo.png';
+  user?: User;
 
   constructor(
     private authService: AuthService,
@@ -29,9 +29,6 @@ export class ToolbarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const loadUser = this.sessionStorageService.getItem('user');
-    if (!!loadUser) {
-      this.user = JSON.parse(loadUser);
-    }
+    this.user = this.sessionStorageService.getLoggedInUser();
   }
 }

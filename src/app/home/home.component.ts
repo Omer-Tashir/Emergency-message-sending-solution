@@ -14,7 +14,7 @@ import { User } from '../model/user';
 })
 export class HomeComponent implements OnInit {
   logo: string = 'assets/logo.png';
-  user!: User;
+  user?: User;
 
   constructor(
     private authService: AuthService,
@@ -26,9 +26,6 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const loadUser = this.sessionStorageService.getItem('user');
-    if (!!loadUser) {
-      this.user = JSON.parse(loadUser);
-    }
+    this.user = this.sessionStorageService.getLoggedInUser();
   }
 }
