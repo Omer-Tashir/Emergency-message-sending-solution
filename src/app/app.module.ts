@@ -60,6 +60,7 @@ import { LoginComponent } from './auth/login/login.component';
 import { ProfileComponent } from './profile/profile.component';
 import { IncidentesComponent } from './incidentes/incidentes.component';
 import { IncidentComponent } from './incidentes/incident/incident.component';
+import { SendAlertComponent } from './send-alert/send-alert.component';
 
 const CUSTOM_DATE_FORMAT = {
   parse: {
@@ -94,6 +95,7 @@ const CUSTOM_DATE_FORMAT = {
     ProfileComponent,
     IncidentesComponent,
     IncidentComponent,
+    SendAlertComponent,
   ],
   imports: [
     CommonModule,

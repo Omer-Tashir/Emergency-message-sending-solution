@@ -797,14 +797,8 @@ td.mat-cell {
     max-height: 400px !important;
 }
 
-.warning_type {
-    font-size: 15px;
-    font-weight: bold;
-    color: #f44336;
-}
-
-.warning_text {
-    display: block;
-    font-size: 14px;
-    font-weight: 400;
+.back-btn {
+    margin-right: 5px;
+    background: silver;
+    border-bottom: 4px solid #b0b0b0;
 }

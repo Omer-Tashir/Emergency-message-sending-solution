@@ -2,4 +2,65 @@
 
 <div class="main-section" [@fadeInOnEnter]>
 
+    <div class="flex-container">
+        <div class="flex-container--right">
+          <h1>הכנסת פרטי אירוע</h1>
+          
+          <section class="form">
+            <div class="inputs-container">
+                <form *ngIf="!!form" [formGroup]="form" novalidate fxLayout="column wrap"
+                    fxLayoutAlign="center center" fxLayoutGap="10px">
+          
+                    <div class="form-inputs-wrapper">
+                        <mat-form-field>
+                            <input matInput type="text" placeholder="שם אירוע" formControlName="name">
+                            <mat-error *ngIf="hasError('name', 'required')">חובה להזין שם אירוע</mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field>
+                            <input matInput type="datetime-local" placeholder="תאריך ושעה" formControlName="date">
+                            <mat-error *ngIf="hasError('date', 'required')">חובה להזין תאריך</mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field>
+                            <input matInput type="text" placeholder="מיקום" formControlName="location" id="location" required [matAutocomplete]="autoCities"
+                                (blur)="checkCity()" autocomplete="off">
+                            <mat-autocomplete autoActiveFirstOption #autoCities="matAutocomplete" (optionSelected)="cityClick($event)">
+                                <mat-option *ngFor="let location of filteredCities | async" [value]="location.name">
+                                    {{ location.name }}
+                                </mat-option>
+                            </mat-autocomplete>
+                            <mat-error *ngIf="hasError('location', 'required')">חובה להזין מיקום</mat-error>
+                        </mat-form-field>
+                
+                        <mat-form-field>
+                            <mat-label>סוג אירוע</mat-label>
+                            <mat-select required formControlName="risk">
+                                <mat-option *ngFor="let incidentType of incidentTypes" [value]="incidentType">{{incidentType}}</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="hasError('risk', 'required')">חובה להזין סוג אירוע</mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field>
+                            <mat-label>רמת סיכון</mat-label>
+                            <mat-select required formControlName="type">
+                                <mat-option *ngFor="let riskType of riskTypes" [value]="riskType">{{riskType}}</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="hasError('type', 'required')">חובה להזין רמת סיכון</mat-error>
+                        </mat-form-field>
+                    </div>
+                </form>
+          
+                <button class="submit-btn" mat-raised-button (click)="submit()" color="primary"
+                    [disabled]="!!form && !form.valid">
+                    המשך
+                </button>
+                <button class="back-btn" mat-raised-button (click)="back()" color="primary">
+                    חזור
+                </button>
+            </div>
+          </section>
+        </div>
+      </div>
+
 </div>

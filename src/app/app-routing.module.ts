@@ -6,12 +6,14 @@ import { isLoggedInGuard } from './auth/auth.guard';
 import { ProfileComponent } from './profile/profile.component';
 import { IncidentesComponent } from './incidentes/incidentes.component';
 import { IncidentComponent } from './incidentes/incident/incident.component';
+import { SendAlertComponent } from './send-alert/send-alert.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/incidents', pathMatch: 'full' },
   { path: 'profile', component: ProfileComponent, canActivate: [isLoggedInGuard] },
   { path: 'incidents', component: IncidentesComponent, canActivate: [isLoggedInGuard] },
   { path: 'incident/:uid', component: IncidentComponent, canActivate: [isLoggedInGuard] },
+  { path: 'sendAlert/:uid', component: SendAlertComponent, canActivate: [isLoggedInGuard] },
 ];
 
 @NgModule({

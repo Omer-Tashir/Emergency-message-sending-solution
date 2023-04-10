@@ -5,8 +5,8 @@ import { catchError, first, map, switchMap, tap } from 'rxjs/operators';
 import { iif, Observable, of, throwError } from 'rxjs';
 
 import { SessionStorageService } from '../core/session-storage-service';
-import { User } from '../model/user';
 import { Incident } from '../model/incident';
+import { User } from '../model/user';
 
 @Injectable({
     providedIn: 'root',
@@ -39,13 +39,16 @@ export class DatabaseService {
         );
     }
 
-    putUser(user: User): Promise<any> {
+    putUser(user: User): Promise<User> {
+        const uid = user.uid ?? this.db.createId();
+        const userWithUID = {...user, uid} as User;
+
         return this.db
             .collection(`users`)
-            .doc(user.uid)
-            .set(user)
-            .then(() => this.afterPutUser(user))
-            .then(() => { return user });
+            .doc(uid)
+            .set(userWithUID)
+            .then(() => this.afterPutUser(userWithUID))
+            .then(() => { return userWithUID });
     }
 
     private afterPutUser(user: User): void {
@@ -69,6 +72,39 @@ export class DatabaseService {
         this.sessionStorageService.setItem('users', JSON.stringify(users));
     }
 
+    putIncident(incident: Incident): Promise<Incident> {
+        const uid = incident.uid ?? this.db.createId();
+        const incidentWithUID = {...incident, uid} as Incident;
+
+        return this.db
+            .collection(`incidents`)
+            .doc(uid)
+            .set(incidentWithUID)
+            .then(() => this.afterPutIncident(incidentWithUID))
+            .then(() => { return incidentWithUID });
+    }
+
+    private afterPutIncident(incident: Incident): void {
+        let incidents = [] as Incident[];
+        const incidentsStorage = this.sessionStorageService.getItem('incidents');
+        if (incidentsStorage) {
+            incidents = JSON.parse(this.sessionStorageService.getItem('incidents'));
+            let index = incidents.findIndex((d: Incident) => d.uid === incident.uid);
+            if (index > -1) {
+                incidents[index] = incident;
+            }
+            else {
+                incidents.push(incident);
+            }
+        }
+        else {
+            incidents.push(incident);
+        }
+        
+        this.sessionStorageService.setItem('incident', JSON.stringify(incident));
+        this.sessionStorageService.setItem('incidents', JSON.stringify(incidents));
+    }
+
     getIncidents(): Observable<Incident[]> {
         return this.db.collection('incidents').get().pipe(
             first(),
@@ -84,9 +120,5 @@ export class DatabaseService {
 
     getCitiesJSON(): Observable<any> {
         return this.http.get("./assets/israel-cities.json");
-    }
-
-    getStreetsJSON(): Observable<any> {
-        return this.http.get("./assets/israel-streets.json");
     }
 }
