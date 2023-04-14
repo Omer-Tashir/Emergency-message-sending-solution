@@ -73,9 +73,19 @@ export class DatabaseService {
     }
 
     putIncident(incident: Incident): Promise<Incident> {
-        const uid = incident.uid ?? this.db.createId();
+        const isUpdate = !!incident.uid;
+        const uid = isUpdate ? incident.uid : this.db.createId();
         const incidentWithUID = {...incident, uid} as Incident;
 
+        if (isUpdate) {
+            return this.db
+                .collection(`incidents`)
+                .doc(uid)
+                .update(incident)
+                .then(() => this.afterPutIncident(incidentWithUID))
+                .then(() => { return incidentWithUID });
+        }
+            
         return this.db
             .collection(`incidents`)
             .doc(uid)

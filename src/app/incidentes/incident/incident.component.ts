@@ -1,12 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { fadeInOnEnterAnimation } from 'angular-animations';
 import { User } from 'src/app/model/user';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Incident, IncidentType, RiskType } from 'src/app/model/incident';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { DatabaseService } from 'src/app/core/database.service';
 import { SessionStorageService } from 'src/app/core/session-storage-service';
-import { first, map, startWith, takeUntil } from 'rxjs/operators';
+import { finalize, first, map, startWith, takeUntil, tap } from 'rxjs/operators';
 import { from, Observable, Subject } from 'rxjs';
 
 @Component({
@@ -16,13 +16,14 @@ import { from, Observable, Subject } from 'rxjs';
   animations: [fadeInOnEnterAnimation()]
 })
 export class IncidentComponent implements OnInit, OnDestroy {
-  
   user?: User;
   form!: FormGroup;
   city: any;
   cities: any[] = [];
   selectedCity: any;
   filteredCities!: Observable<any[]>;
+  incident?: Incident;
+  isNewIncident = true;
   
   riskTypes: string[] = [];
   incidentTypes: string[] = [];
@@ -34,13 +35,13 @@ export class IncidentComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private db: DatabaseService,
     private sessionStorageService: SessionStorageService,
   ) {}
 
   ngOnInit(): void {
     this.user = this.sessionStorageService.getLoggedInUser();
-    
     this.db.getCitiesJSON().subscribe(data => {
       this.cities = data;
     });
@@ -48,12 +49,38 @@ export class IncidentComponent implements OnInit, OnDestroy {
     for (let type of Object.values(RiskType)) {
       this.riskTypes.push(type);
     }
-
     for (let type of Object.values(IncidentType)) {
       this.incidentTypes.push(type);
     }
 
-    this.initForm();
+    this.loadIncident();
+  }
+
+  private loadIncident(): void {
+    const incidentUid = this.route.snapshot.paramMap.get('uid');
+    if (incidentUid) {
+      this.isNewIncident = incidentUid === 'new';
+      if (!this.isNewIncident) {
+        if (!this.sessionStorageService.getIncidents()?.length) {
+          this.db.getIncidents().pipe(
+            first(),
+            map(incidents => incidents.find(i => i.uid === incidentUid)),
+            tap(incident => this.incident = incident),
+            finalize(() => this.initForm())
+          );
+        }
+        else {
+          this.incident = this.sessionStorageService.getIncident(incidentUid);
+          this.initForm();
+        }
+      }
+      else {
+        this.initForm();
+      }
+    }
+    else {
+      this.initForm();
+    }
   }
 
   submit(): void {
@@ -69,13 +96,13 @@ export class IncidentComponent implements OnInit, OnDestroy {
 
   private initForm() {
     this.form = new FormGroup({
-      uid: new FormControl(),
-      name: new FormControl('', [Validators.required]),
-      date: new FormControl(new Date(), [Validators.required]),
-      location: new FormControl('', [Validators.required]),
-      risk: new FormControl('', [Validators.required]),
-      type: new FormControl('', [Validators.required]),
-      successRate: new FormControl(0),
+      uid: new FormControl(this.incident?.uid ?? ''),
+      name: new FormControl(this.incident?.name ?? '', [Validators.required]),
+      date: new FormControl(this.incident?.date ?? new Date(), [Validators.required]),
+      location: new FormControl(this.incident?.location ?? '', [Validators.required]),
+      risk: new FormControl(this.incident?.risk ?? '', [Validators.required]),
+      type: new FormControl(this.incident?.type ?? '', [Validators.required]),
+      successRate: new FormControl(this.incident?.successRate ?? 0),
     });
 
     this.filteredCities = this.form.controls['location'].valueChanges.pipe(

@@ -4,7 +4,7 @@
 
     <div class="flex-container">
         <div class="flex-container--right">
-          <h1>הכנסת פרטי אירוע</h1>
+          <h1>{{isNewIncident ? 'הכנסת פרטי אירוע' : incident?.name}}</h1>
           
           <section class="form">
             <div class="inputs-container">
@@ -51,12 +51,12 @@
                     </div>
                 </form>
           
+                <button class="back-btn" mat-raised-button (click)="back()" color="primary">
+                    חזור
+                </button>
                 <button class="submit-btn" mat-raised-button (click)="submit()" color="primary"
                     [disabled]="!!form && !form.valid">
                     המשך
-                </button>
-                <button class="back-btn" mat-raised-button (click)="back()" color="primary">
-                    חזור
                 </button>
             </div>
           </section>

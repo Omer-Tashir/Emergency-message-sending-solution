@@ -10,8 +10,7 @@
         </div>
 
         <table mat-table [dataSource]="dataSource" matSort #matSort="matSort" 
-            matSortActive="deliveryDate" matSortDisableClear 
-            matSortDirection="asc">
+            matSortActive="date" matSortDisableClear matSortDirection="desc">
     
             <ng-container matColumnDef="uid">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header="uid">מזהה</th>

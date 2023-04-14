@@ -46,6 +46,14 @@ export class SessionStorageService {
     return [];
   }
 
+  getIncident(uid: string): Incident | undefined {
+    const incidents = this.getIncidents();
+    if (incidents?.length) {
+      return incidents.find(i => i.uid === uid);
+    }
+    return undefined;
+  }
+
   public clear() {
     sessionStorage.clear(); 
   }

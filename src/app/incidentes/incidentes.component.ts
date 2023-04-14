@@ -1,9 +1,9 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatSort, SortDirection } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { fadeInOnEnterAnimation } from 'angular-animations';
 import { merge, Observable, of, Subject } from 'rxjs';
-import { catchError, first, map, startWith, switchMap, takeUntil } from 'rxjs/operators';
+import { catchError, first, map, startWith, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { AlertService } from '../core/alerts/alert.service';
 import { DatabaseService } from '../core/database.service';
 import { SessionStorageService } from '../core/session-storage-service';
@@ -52,6 +52,7 @@ export class IncidentesComponent implements OnInit, AfterViewInit, OnDestroy {
     private db: DatabaseService,
     private alertService: AlertService,
     private sessionStorageService: SessionStorageService,
+    private cdref: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -87,9 +88,11 @@ export class IncidentesComponent implements OnInit, AfterViewInit, OnDestroy {
           this.resultsLength = data.length;
           return data;
         }),
+        tap(data => this.incidents = data),
+        tap(data => this.dataSource.data = data),
         takeUntil(this.destroy$),
       )
-      .subscribe(data => (this.incidents = data));
+      .subscribe(() => this.cdref.detectChanges());
   }
 
   getDay(deliveryDate: string): string {
@@ -111,15 +114,37 @@ export class IncidentesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private sortIncidents(incidents: Incident[], sort: string, order: SortDirection, page: number): Incident[] {
-    console.log(sort);
-    console.log(order);
-    console.log(page);
+    switch (sort) {
+      case 'uid':
+        this.dataSource.data = incidents.sort(
+          (a, b) => order === 'asc' ? a.uid.localeCompare(b.uid) : b.uid.localeCompare(a.uid)
+        );
+        break;
+
+      case 'date':
+        this.dataSource.data = incidents.sort(
+          (a, b) => order === 'asc' ? new Date(a.date).getTime() - new Date(b.date).getTime() : new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+        break;
+
+      case 'location':
+        this.dataSource.data = incidents.sort(
+          (a, b) => order === 'asc' ? a.location.localeCompare(b.location) : b.location.localeCompare(a.location)
+        );
+        break;
+
+      case 'successRate':
+        this.dataSource.data = incidents.sort(
+          (a, b) => order === 'asc' ? a.successRate - b.successRate : b.successRate - a.successRate
+        );
+        break;
+    }
 
     return incidents;
   }
 
   openIncident(uid: string): void {
-    this.router.navigate(['incidents', uid]);
+    this.router.navigate(['incident', uid]);
   }
 
   createNewIncident(): void {
