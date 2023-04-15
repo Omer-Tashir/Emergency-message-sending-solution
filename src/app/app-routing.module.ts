@@ -3,6 +3,7 @@ import { Router, RouterModule, Routes } from '@angular/router';
 
 import { AuthService } from './auth/auth.service';
 import { isLoggedInGuard } from './auth/auth.guard';
+import { CrmComponent } from './crm/crm.component';
 import { ProfileComponent } from './profile/profile.component';
 import { IncidentesComponent } from './incidentes/incidentes.component';
 import { IncidentComponent } from './incidentes/incident/incident.component';
@@ -10,6 +11,7 @@ import { SendAlertComponent } from './send-alert/send-alert.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/incidents', pathMatch: 'full' },
+  { path: 'crm', component: CrmComponent, canActivate: [isLoggedInGuard] },
   { path: 'profile', component: ProfileComponent, canActivate: [isLoggedInGuard] },
   { path: 'incidents', component: IncidentesComponent, canActivate: [isLoggedInGuard] },
   { path: 'incident/:uid', component: IncidentComponent, canActivate: [isLoggedInGuard] },

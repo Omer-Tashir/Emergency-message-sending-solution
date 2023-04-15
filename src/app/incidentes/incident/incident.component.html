@@ -21,17 +21,6 @@
                             <input matInput type="datetime-local" placeholder="תאריך ושעה" formControlName="date">
                             <mat-error *ngIf="hasError('date', 'required')">חובה להזין תאריך</mat-error>
                         </mat-form-field>
-
-                        <mat-form-field>
-                            <input matInput type="text" placeholder="מיקום" formControlName="location" id="location" required [matAutocomplete]="autoCities"
-                                (blur)="checkCity()" autocomplete="off">
-                            <mat-autocomplete autoActiveFirstOption #autoCities="matAutocomplete" (optionSelected)="cityClick($event)">
-                                <mat-option *ngFor="let location of filteredCities | async" [value]="location.name">
-                                    {{ location.name }}
-                                </mat-option>
-                            </mat-autocomplete>
-                            <mat-error *ngIf="hasError('location', 'required')">חובה להזין מיקום</mat-error>
-                        </mat-form-field>
                 
                         <mat-form-field>
                             <mat-label>סוג אירוע</mat-label>
@@ -50,6 +39,35 @@
                         </mat-form-field>
                     </div>
                 </form>
+
+                <p class="location-title">בחירת רדיוס התראה</p>
+                <span class="location-hint">* באמצעות בחירת רדיוס התראה (העיגול האדום במפה) ניתן יהיה לשייך את הטיולים הרלוונטים לאירוע זה</span>
+
+                <agm-map [latitude]="latitude" [longitude]="longitude" [zoom]="zoom">
+                    <ng-container *ngFor="let m of markers; let i = index">
+                        <agm-marker *ngIf="!!m && m.isShown" 
+                            [latitude]="m.lat" 
+                            [longitude]="m.lng" 
+                            [label]="m.label" 
+                            [iconUrl]="m.icon"
+                            (markerClick)="clickedMarker(m.label, i)">
+                            <agm-info-window>
+                                <div>{{m.content}}</div>
+                            </agm-info-window>
+                        </agm-marker>
+                    </ng-container>
+                
+                    <agm-circle 
+                        [latitude]="radiusLat" 
+                        [longitude]="radiusLong" 
+                        [radius]="radius" 
+                        [fillColor]="'red'"
+                        [circleDraggable]="true" 
+                        [editable]="true" 
+                        (dragEnd)="radiusDragEnd($event)"
+                        (radiusChange)="event('radiusChange',$event)">
+                    </agm-circle>
+                </agm-map>
           
                 <button class="back-btn" mat-raised-button (click)="back()" color="primary">
                     חזור

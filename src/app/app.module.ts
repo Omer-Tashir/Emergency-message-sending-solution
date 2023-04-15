@@ -16,6 +16,7 @@ import { CustomMatPaginatorIntl } from './core/custom.mat.paginator.intl';
 import { CustomMaterialModule } from './core/material.module';
 
 // Third party library modules
+import { AgmCoreModule } from '@agm/core';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 
 // Swiper
@@ -61,6 +62,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { IncidentesComponent } from './incidentes/incidentes.component';
 import { IncidentComponent } from './incidentes/incident/incident.component';
 import { SendAlertComponent } from './send-alert/send-alert.component';
+import { CrmComponent } from './crm/crm.component';
 
 const CUSTOM_DATE_FORMAT = {
   parse: {
@@ -96,6 +98,7 @@ const CUSTOM_DATE_FORMAT = {
     IncidentesComponent,
     IncidentComponent,
     SendAlertComponent,
+    CrmComponent,
   ],
   imports: [
     CommonModule,
@@ -107,6 +110,9 @@ const CUSTOM_DATE_FORMAT = {
     BrowserAnimationsModule,
     CustomMaterialModule,
     SwiperModule,
+    AgmCoreModule.forRoot({
+      apiKey: environment.googleApiKey
+    }),
     NgxMaterialTimepickerModule,
     AuthRoutingModule,
     ChartsModule,

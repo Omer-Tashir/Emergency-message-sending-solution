@@ -1,0 +1,14 @@
+<app-toolbar></app-toolbar>
+
+<div class="main-section" [@fadeInOnEnter]>
+    
+    <h1>העלה קובץ CRM</h1>
+
+    <button class="back-btn" mat-raised-button (click)="back()" color="primary">
+        חזור
+    </button>
+    <button class="submit-btn" mat-raised-button (click)="submit()" color="primary"
+        [disabled]="!fileUploaded">
+        המשך
+    </button>
+</div>

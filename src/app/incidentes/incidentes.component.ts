@@ -40,7 +40,6 @@ export class IncidentesComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
 
   user?: User;
-  cities: any[] = [];
   incidents?: Incident[];
 
   resultsLength = 0;
@@ -57,9 +56,6 @@ export class IncidentesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.user = this.sessionStorageService.getLoggedInUser();
-    this.db.getCitiesJSON().subscribe(data => {
-      this.cities = data;
-    });
   }
 
   ngAfterViewInit(): void {
@@ -148,7 +144,7 @@ export class IncidentesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   createNewIncident(): void {
-    this.router.navigate(['incident', 'new']);
+    this.router.navigate(['crm']);
   }
 
   ngOnDestroy(): void {

@@ -127,8 +127,4 @@ export class DatabaseService {
             catchError(err => of([])),
         );
     }
-
-    getCitiesJSON(): Observable<any> {
-        return this.http.get("./assets/israel-cities.json");
-    }
 }

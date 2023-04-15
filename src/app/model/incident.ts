@@ -1,5 +1,5 @@
 export interface Incident {
-    uid: string;
+    uid: string; // PK
     name: string;
     date: Date;
     location: string;

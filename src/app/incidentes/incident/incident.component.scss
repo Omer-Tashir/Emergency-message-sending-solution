@@ -37,3 +37,21 @@ mat-form-field {
     display: block;
     padding-bottom: 10px;
 }
+
+agm-map {
+    height: 40vh;
+}
+
+.location-title {
+    margin: 20px 0 10px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.location-hint {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    font-style: italic;
+    margin-bottom: 20px;
+}
