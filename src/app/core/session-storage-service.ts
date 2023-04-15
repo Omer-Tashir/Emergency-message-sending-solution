@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Incident } from '../model/incident';
+import { Trip } from '../model/trip';
 import { User } from '../model/user';
 
 @Injectable({
@@ -52,6 +53,24 @@ export class SessionStorageService {
       return incidents.find(i => i.uid === uid);
     }
     return undefined;
+  }
+
+  getTrips(): Trip[] {
+    const loadTrips = this.getItem('trips');
+    if (!!loadTrips) {
+      return JSON.parse(loadTrips) as Trip[];
+    }
+
+    return [];
+  }
+
+  getTripsInRadius(): Trip[] {
+    const loadTrips = this.getItem('tripsInRadius');
+    if (!!loadTrips) {
+      return JSON.parse(loadTrips) as Trip[];
+    }
+
+    return [];
   }
 
   public clear() {

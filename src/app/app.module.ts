@@ -5,6 +5,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { DatePipe, CommonModule } from '@angular/common';
+import { PapaParseModule } from 'ngx-papaparse';
 import { ChartsModule } from 'ng2-charts';
 import { CountUpModule } from 'ngx-countup';
 
@@ -114,13 +115,14 @@ const CUSTOM_DATE_FORMAT = {
       apiKey: environment.googleApiKey
     }),
     NgxMaterialTimepickerModule,
-    AuthRoutingModule,
+    PapaParseModule,
     ChartsModule,
     CountUpModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule, // imports firebase/firestore, only needed for database features
     AngularFireAuthModule, // imports firebase/auth, only needed for auth features
     AngularFireDatabaseModule,
+    AuthRoutingModule,
     AppRoutingModule,
   ],
   entryComponents: [

@@ -4,6 +4,11 @@
     
     <h1>העלה קובץ CRM</h1>
 
+    <div class="upload-container">
+        <img src="assets/csv.png" alt="csv">
+        <input type="file" accept=".csv" (change)="handleFileSelect($event)">
+    </div>
+
     <button class="back-btn" mat-raised-button (click)="back()" color="primary">
         חזור
     </button>

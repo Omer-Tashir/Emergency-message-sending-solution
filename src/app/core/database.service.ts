@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { catchError, first, map, switchMap, tap } from 'rxjs/operators';
 import { iif, Observable, of, throwError } from 'rxjs';
@@ -14,7 +13,6 @@ import { User } from '../model/user';
 export class DatabaseService {
 
     constructor(
-        private http: HttpClient,
         private db: AngularFirestore,
         private sessionStorageService: SessionStorageService
     ) {}
@@ -72,16 +70,15 @@ export class DatabaseService {
         this.sessionStorageService.setItem('users', JSON.stringify(users));
     }
 
-    putIncident(incident: Incident): Promise<Incident> {
-        const isUpdate = !!incident.uid;
-        const uid = isUpdate ? incident.uid : this.db.createId();
+    putIncident(incident: Incident, isNew: boolean): Promise<Incident> {
+        const uid = isNew ? this.db.createId(): incident.uid;
         const incidentWithUID = {...incident, uid} as Incident;
 
-        if (isUpdate) {
+        if (isNew) {
             return this.db
                 .collection(`incidents`)
                 .doc(uid)
-                .update(incident)
+                .set(incidentWithUID)
                 .then(() => this.afterPutIncident(incidentWithUID))
                 .then(() => { return incidentWithUID });
         }
@@ -89,7 +86,7 @@ export class DatabaseService {
         return this.db
             .collection(`incidents`)
             .doc(uid)
-            .set(incidentWithUID)
+            .update(incident)
             .then(() => this.afterPutIncident(incidentWithUID))
             .then(() => { return incidentWithUID });
     }
@@ -111,7 +108,6 @@ export class DatabaseService {
             incidents.push(incident);
         }
         
-        this.sessionStorageService.setItem('incident', JSON.stringify(incident));
         this.sessionStorageService.setItem('incidents', JSON.stringify(incidents));
     }
 

@@ -9,6 +9,7 @@ import { DatabaseService } from 'src/app/core/database.service';
 import { SessionStorageService } from 'src/app/core/session-storage-service';
 import { finalize, first, map, takeUntil, tap } from 'rxjs/operators';
 import { Marker } from 'src/app/model/google-maps';
+import { Trip } from 'src/app/model/trip';
 import { from, Subject } from 'rxjs';
 
 import * as loader from '@googlemaps/js-api-loader';
@@ -26,6 +27,7 @@ export class IncidentComponent implements OnInit, OnDestroy {
   isNewIncident = true;
   hasChanges = false;
 
+  trips: Trip[] = [];
   riskTypes: string[] = [];
   incidentTypes: string[] = [];
   
@@ -43,6 +45,14 @@ export class IncidentComponent implements OnInit, OnDestroy {
   markers: Marker[] = [];
   private geoCoder: any;
 
+  labelOptions = {
+    color: 'black',
+    fontFamily: '',
+    fontSize: '14px',
+    fontWeight: 'bold',
+    className: 'marker-label'
+  } as google.maps.MarkerLabel;
+
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -55,6 +65,7 @@ export class IncidentComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.user = this.sessionStorageService.getLoggedInUser();
+    this.trips = this.sessionStorageService.getTrips();
 
     for (let type of Object.values(RiskType)) {
       this.riskTypes.push(type);
@@ -74,22 +85,18 @@ export class IncidentComponent implements OnInit, OnDestroy {
   private loadIncident(): void {
     const incidentUid = this.route.snapshot.paramMap.get('uid');
     if (incidentUid) {
-      this.isNewIncident = incidentUid === 'new';
-      if (!this.isNewIncident) {
-        if (!this.sessionStorageService.getIncidents()?.length) {
-          this.db.getIncidents().pipe(
-            first(),
-            map(incidents => incidents.find(i => i.uid === incidentUid)),
-            tap(incident => this.incident = incident),
-            finalize(() => this.initForm())
-          );
-        }
-        else {
-          this.incident = this.sessionStorageService.getIncident(incidentUid);
-          this.initForm();
-        }
+      this.isNewIncident = !this.sessionStorageService.getIncidents()?.find(i => i.uid === incidentUid) ?? false;
+      console.log('isNewIncident: ' + this.isNewIncident);
+      if (!this.sessionStorageService.getIncidents()?.length) {
+        this.db.getIncidents().pipe(
+          first(),
+          map(incidents => incidents.find(i => i.uid === incidentUid)),
+          tap(incident => this.incident = incident),
+          finalize(() => this.initForm())
+        ).subscribe();
       }
       else {
+        this.incident = this.sessionStorageService.getIncident(incidentUid);
         this.initForm();
       }
     }
@@ -99,8 +106,11 @@ export class IncidentComponent implements OnInit, OnDestroy {
   }
 
   submit(): void {
+    const trips = this.getTripsInRadius();
+    sessionStorage.setItem('tripsInRadius', JSON.stringify(trips));
+
     if (this.hasChanges || this.isNewIncident) {
-      from(this.db.putIncident({...this.form.value} as Incident)).pipe(
+      from(this.db.putIncident({...this.form.value} as Incident, this.isNewIncident)).pipe(
         first(),
         map(incident => this.router.navigate(['sendAlert', incident.uid]))
       ).subscribe();
@@ -114,12 +124,24 @@ export class IncidentComponent implements OnInit, OnDestroy {
     return this.form?.controls[controlName].hasError(errorName);
   };
 
+  private getTripsInRadius(): Trip[] {
+    const trips: Trip[] = [];
+    Object.values(this.markers).forEach(marker => {
+      if (marker.isShown) {
+        const trip = this.trips.find(t => t.name === marker.label.text);
+        if (trip) {
+          trips.push(trip);
+        }
+      }
+    });
+    return trips;
+  }
+
   private initForm() {
     this.form = new FormGroup({
       uid: new FormControl(this.incident?.uid ?? ''),
       name: new FormControl(this.incident?.name ?? '', [Validators.required]),
       date: new FormControl(this.incident?.date ?? new Date(), [Validators.required]),
-      location: new FormControl(this.incident?.location ?? '', [Validators.required]),
       risk: new FormControl(this.incident?.risk ?? '', [Validators.required]),
       type: new FormControl(this.incident?.type ?? '', [Validators.required]),
       successRate: new FormControl(this.incident?.successRate ?? 0),
@@ -145,25 +167,27 @@ export class IncidentComponent implements OnInit, OnDestroy {
         this.radiusLong = this.longitude;
         this.zoom = 8;
        
-        // for (let i=1; i<50; i++) {
-        //   this.markers.push(
-        //     {
-        //       lat: this.latitude+Math.random(),
-        //       lng: this.longitude+Math.random(),
-        //       label: `${i}`,
-        //       draggable: false,
-        //       content: `Content no ${i}`,
-        //       isShown: false,
-        //       icon:'./assets/marker.png'
-        //     }
-        //   );
-        // }
+        for (let trip of this.trips) {
+          this.markers.push(
+            {
+              lat: trip.currentLocation.latitude,
+              lng: trip.currentLocation.longitude,
+              label: {...this.labelOptions, text: trip.name},
+              draggable: false,
+              content: `
+                <h3>${trip.name}</h3>
+                <hr>
+                <br>
+                <p>מדריך: ${trip.tutor.firstname} ${trip.tutor.lastname}</p>
+                <p>מספר מטיילים: ${trip.groupSize}</p>
+              `,
+              isShown: false,
+              icon:'./assets/marker.png'
+            }
+          );
+        }
       });
     }
-  }
-
-  clickedMarker(label: any, index: number) {
-    console.log(`clicked the marker: ${label || index}`)
   }
 
   radiusDragEnd($event: any) {
@@ -179,7 +203,7 @@ export class IncidentComponent implements OnInit, OnDestroy {
 
   private showHideMarkers() {
     Object.values(this.markers).forEach(value => {
-      value.isShown = this.getDistanceBetween(value.lat,value.lng, this.radiusLat, this.radiusLong);
+      value.isShown = this.getDistanceBetween(value.lat, value.lng, this.radiusLat, this.radiusLong);
     });
   }
 

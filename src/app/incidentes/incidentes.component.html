@@ -19,6 +19,11 @@
                 </td>
             </ng-container>
     
+            <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header="name">שם</th>
+                <td mat-cell *matCellDef="let row">{{row?.name}}</td>
+            </ng-container>
+            
             <ng-container matColumnDef="date">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header="date">תאריך</th>
                 <td mat-cell *matCellDef="let row">
@@ -26,11 +31,6 @@
                         {{getDay(row?.date)}} {{row?.date | dateFormat}}
                     </ng-container>
                 </td>
-            </ng-container>
-    
-            <ng-container matColumnDef="location">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header="location">מיקום</th>
-                <td mat-cell *matCellDef="let row">{{row?.location}}</td>
             </ng-container>
     
             <ng-container matColumnDef="successRate">

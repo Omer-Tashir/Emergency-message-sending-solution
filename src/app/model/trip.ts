@@ -22,6 +22,4 @@ export interface TripTutor {
 export interface TripLocation {
     latitude: number;
     longitude: number;
-    radiusLat: number;
-    radiusLong: number;
 }

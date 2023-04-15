@@ -2,6 +2,41 @@
 
 <div class="main-section" [@fadeInOnEnter]>
 
+    <h1>רשימת טיולים רלוונטים לאיזור האירוע</h1>
+
+    <table mat-table [dataSource]="dataSource">
+        <ng-container matColumnDef="uid">
+            <th mat-header-cell *matHeaderCellDef> מזהה טיול </th>
+            <td mat-cell *matCellDef="let trip"> {{trip.uid}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef> שם הטיול </th>
+            <td mat-cell *matCellDef="let trip"> {{trip.name}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="tutor">
+            <th mat-header-cell *matHeaderCellDef> מדריך </th>
+            <td mat-cell *matCellDef="let trip"> {{trip.tutor.firstname}} {{trip.tutor.lastname}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="groupSize">
+            <th mat-header-cell *matHeaderCellDef> כמות מטיילים </th>
+            <td mat-cell *matCellDef="let trip"> {{trip.groupSize}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="currentLocation">
+            <th mat-header-cell *matHeaderCellDef> מיקום נוכחי </th>
+            <td mat-cell *matCellDef="let trip"> 
+                <a href="https://www.google.com/maps?q={{trip.currentLocation.latitude}},{{trip.currentLocation.longitude}}" target="_blank">
+                    {{trip.currentLocation.latitude}}, {{trip.currentLocation.longitude}}
+                </a>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+    </table>
 
     <button class="back-btn" mat-raised-button (click)="back()" color="primary">
         חזור

@@ -8,6 +8,8 @@ import { SessionStorageService } from '../core/session-storage-service';
 import { first, map, tap, finalize } from 'rxjs/operators';
 import { Incident } from '../model/incident';
 import { User } from '../model/user';
+import { Trip } from '../model/trip';
+import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
   selector: 'app-send-alert',
@@ -18,6 +20,9 @@ import { User } from '../model/user';
 export class SendAlertComponent implements OnInit, OnDestroy {
   user?: User;
   incident?: Incident;
+  trips: Trip[] = [];
+  columns: string[] = ['uid', 'name', 'tutor', 'groupSize', 'currentLocation'];
+  dataSource!: MatTableDataSource<Trip>;
 
   private destroy$ = new Subject<void>();
 
@@ -31,6 +36,7 @@ export class SendAlertComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.user = this.sessionStorageService.getLoggedInUser();
     this.loadIncident();
+    this.loadTrips();
   }
 
   private loadIncident(): void {
@@ -47,6 +53,11 @@ export class SendAlertComponent implements OnInit, OnDestroy {
         this.incident = this.sessionStorageService.getIncident(incidentUid);
       }
     }
+  }
+
+  private loadTrips(): void {
+    this.trips = this.sessionStorageService.getTripsInRadius();
+    this.dataSource = new MatTableDataSource(this.trips);
   }
 
   submit(): void {

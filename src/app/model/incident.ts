@@ -2,7 +2,6 @@ export interface Incident {
     uid: string; // PK
     name: string;
     date: Date;
-    location: string;
     risk: RiskType;
     type: IncidentType;
     successRate: number;
