@@ -8,6 +8,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { IncidentesComponent } from './incidentes/incidentes.component';
 import { IncidentComponent } from './incidentes/incident/incident.component';
 import { SendAlertComponent } from './send-alert/send-alert.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/incidents', pathMatch: 'full' },
@@ -16,6 +17,7 @@ const routes: Routes = [
   { path: 'incidents', component: IncidentesComponent, canActivate: [isLoggedInGuard] },
   { path: 'incident/:uid', component: IncidentComponent, canActivate: [isLoggedInGuard] },
   { path: 'sendAlert/:uid', component: SendAlertComponent, canActivate: [isLoggedInGuard] },
+  { path: 'dashboard/:uid', component: DashboardComponent, canActivate: [isLoggedInGuard] },
 ];
 
 @NgModule({

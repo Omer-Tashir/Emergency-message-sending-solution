@@ -64,6 +64,7 @@ import { IncidentesComponent } from './incidentes/incidentes.component';
 import { IncidentComponent } from './incidentes/incident/incident.component';
 import { SendAlertComponent } from './send-alert/send-alert.component';
 import { CrmComponent } from './crm/crm.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 
 const CUSTOM_DATE_FORMAT = {
   parse: {
@@ -100,6 +101,7 @@ const CUSTOM_DATE_FORMAT = {
     IncidentComponent,
     SendAlertComponent,
     CrmComponent,
+    DashboardComponent,
   ],
   imports: [
     CommonModule,

@@ -29,6 +29,7 @@ export class SendAlertComponent implements OnInit, OnDestroy {
   messagesDataSource!: MatTableDataSource<OutgoingMessage>;
   outgoingMessage!: string;
   sendingMessages = false;
+  allMessagesSent = false;
 
   MessageStatus = MessageStatus;
 
@@ -102,6 +103,11 @@ export class SendAlertComponent implements OnInit, OnDestroy {
         this.randomIntFromInterval(1, 2) === 1 ? MessageStatus.FAILURE : MessageStatus.DECLINED;
       }, this.randomIntFromInterval(1_000, 10_000));
     }
+
+    setTimeout(() => {
+      this.allMessagesSent = true;
+      this.router.navigate(['dashboard', this.incident?.uid]);
+    }, 10_000);
   }
 
   private randomIntFromInterval(min: number, max: number) { // min and max included 
