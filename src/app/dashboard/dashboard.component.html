@@ -1,1 +1,10 @@
-<p>dashboard works!</p>
+<app-toolbar></app-toolbar>
+
+<div class="main-section" [@fadeInOnEnter]>
+    
+    <h1>אירוע מספר: {{incident?.uid}}</h1>
+
+    <button class="submit-btn" mat-raised-button (click)="complete()" color="warn">
+        סיים אירוע
+    </button>
+</div>

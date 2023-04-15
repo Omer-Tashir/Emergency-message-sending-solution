@@ -1,14 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { fadeInOnEnterAnimation } from 'angular-animations';
-import { from, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { PapaParseService } from 'ngx-papaparse';
-import { DatabaseService } from '../core/database.service';
 import { SessionStorageService } from '../core/session-storage-service';
 import { User } from '../model/user';
 import { Trip, TripLocation, TripTutor } from '../model/trip';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { first, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-crm',
@@ -26,7 +24,6 @@ export class CrmComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private db: DatabaseService,
     private papa: PapaParseService,
     private firestore: AngularFirestore,
     private sessionStorageService: SessionStorageService,
