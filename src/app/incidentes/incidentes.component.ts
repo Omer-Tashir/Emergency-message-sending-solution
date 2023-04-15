@@ -131,7 +131,7 @@ export class IncidentesComponent implements OnInit, AfterViewInit, OnDestroy {
 
       case 'successRate':
         this.dataSource.data = incidents.sort(
-          (a, b) => order === 'asc' ? a.successRate - b.successRate : b.successRate - a.successRate
+          (a, b) => order === 'asc' ? (a.successRate ?? 0) - (b.successRate ?? 0) : (b.successRate ?? 0) - (a.successRate ?? 0)
         );
         break;
     }

@@ -4,7 +4,7 @@ export interface Incident {
     date: Date;
     risk: RiskType;
     type: IncidentType;
-    successRate: number;
+    successRate?: number;
 }
 
 export enum IncidentType {

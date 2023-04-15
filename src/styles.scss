@@ -460,16 +460,6 @@ input[readonly="true"] {
   position: absolute !important;
 }
 
-.mat-progress-spinner circle,
-.mat-spinner circle {
-  stroke: white !important;
-}
-
-.card-spinner .mat-progress-spinner circle,
-.card-spinner .mat-spinner circle {
-  stroke: #84A24C!important;
-}
-
 .mat-snack-bar-container {
   background: #ffffff;
 }
@@ -811,4 +801,15 @@ td.mat-cell {
   position: relative;
   font-weight: bold;
   top: 30px;
+}
+
+mat-spinner.mat-progress-spinner {
+  position: relative !important;
+  width: 20px !important;
+  height: 20px !important;
+  
+  & svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
 }

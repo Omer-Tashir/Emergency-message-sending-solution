@@ -85,8 +85,11 @@ export class IncidentComponent implements OnInit, OnDestroy {
   private loadIncident(): void {
     const incidentUid = this.route.snapshot.paramMap.get('uid');
     if (incidentUid) {
-      this.isNewIncident = !this.sessionStorageService.getIncidents()?.find(i => i.uid === incidentUid) ?? false;
-      console.log('isNewIncident: ' + this.isNewIncident);
+      this.db.isIncidentExist(incidentUid).then(exist => {
+        this.isNewIncident = !exist;
+        console.log('isNewIncident: ' + this.isNewIncident);
+      });
+
       if (!this.sessionStorageService.getIncidents()?.length) {
         this.db.getIncidents().pipe(
           first(),
@@ -144,7 +147,6 @@ export class IncidentComponent implements OnInit, OnDestroy {
       date: new FormControl(this.incident?.date ?? new Date(), [Validators.required]),
       risk: new FormControl(this.incident?.risk ?? '', [Validators.required]),
       type: new FormControl(this.incident?.type ?? '', [Validators.required]),
-      successRate: new FormControl(this.incident?.successRate ?? 0),
     });
 
     this.form.valueChanges.pipe(
@@ -186,6 +188,18 @@ export class IncidentComponent implements OnInit, OnDestroy {
             }
           );
         }
+
+        if (sessionStorage.getItem('radius')) {
+          this.radius = Number(sessionStorage.getItem('radius'));
+        }
+
+        if (sessionStorage.getItem('radiusLat')) {
+          this.radiusLat = Number(sessionStorage.getItem('radiusLat'));
+        }
+
+        if (sessionStorage.getItem('radiusLong')) {
+          this.radiusLong = Number(sessionStorage.getItem('radiusLong'));
+        }
       });
     }
   }
@@ -193,11 +207,14 @@ export class IncidentComponent implements OnInit, OnDestroy {
   radiusDragEnd($event: any) {
     this.radiusLat = $event.coords.lat;
     this.radiusLong = $event.coords.lng;
+    sessionStorage.setItem('radiusLat', ''+this.radiusLat);
+    sessionStorage.setItem('radiusLong', ''+this.radiusLong);
     this.showHideMarkers();
   }
 
   event(type: any, $event: any) {
     this.radius = $event;
+    sessionStorage.setItem('radius', ''+this.radius);
     this.showHideMarkers();
   }
 

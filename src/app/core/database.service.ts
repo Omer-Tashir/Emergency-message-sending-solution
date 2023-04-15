@@ -91,6 +91,15 @@ export class DatabaseService {
             .then(() => { return incidentWithUID });
     }
 
+    isIncidentExist(uid: string): Promise<boolean> {
+        return this.db
+            .collection(`incidents`)
+            .doc(uid)
+            .get()
+            .toPromise()
+            .then(incident => { return incident.exists });
+    }
+
     private afterPutIncident(incident: Incident): void {
         let incidents = [] as Incident[];
         const incidentsStorage = this.sessionStorageService.getItem('incidents');

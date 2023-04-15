@@ -1,5 +1,5 @@
 table {
-    margin: 30px auto;
+    margin: 30px auto 0;
 }
 
 tr, td, th {
@@ -8,4 +8,37 @@ tr, td, th {
 
 a {
     color: #2196F3 !important;
+}
+
+.message-container {
+    margin: 30px auto 100px;
+
+    & > h2 {
+        margin-bottom: 10px !important;
+    }
+
+    & > .message-hints {
+        margin-top: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+
+        & > mat-chip {
+            border-radius: 50px;
+            padding: 7px 12px;
+            cursor: pointer;
+        }
+    }
+}
+
+.hint {
+    margin: 10px auto;
+    font-style: italic;
+}
+
+.status {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
 }
