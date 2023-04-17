@@ -3,7 +3,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { catchError, first, map, switchMap, tap } from 'rxjs/operators';
 import { iif, Observable, of, throwError } from 'rxjs';
 
-import { SessionStorageService } from '../core/session-storage-service';
+import { StorageService } from '../core/session-storage-service';
 import { Incident } from '../model/incident';
 import { User } from '../model/user';
 
@@ -14,7 +14,7 @@ export class DatabaseService {
 
     constructor(
         private db: AngularFirestore,
-        private sessionStorageService: SessionStorageService
+        private storageService: StorageService
     ) {}
 
     login(username: string, password: string): Observable<User> {
@@ -30,7 +30,7 @@ export class DatabaseService {
                     result.uid = doc.id;
                     return result;
                 }),
-                tap(user => this.sessionStorageService.setItem('user', JSON.stringify(user))),
+                tap(user => this.storageService.setItem('user', JSON.stringify(user))),
                 catchError(error => {
                     throw new Error(error);
                 })
@@ -51,9 +51,9 @@ export class DatabaseService {
 
     private afterPutUser(user: User): void {
         let users = [] as User[];
-        const usersStorage = this.sessionStorageService.getItem('users');
+        const usersStorage = this.storageService.getItem('users');
         if (usersStorage) {
-            users = JSON.parse(this.sessionStorageService.getItem('users'));
+            users = JSON.parse(this.storageService.getItem('users'));
             let index = users.findIndex((d: User) => d.uid === user.uid);
             if (index > -1) {
                 users[index] = user;
@@ -66,8 +66,8 @@ export class DatabaseService {
             users.push(user);
         }
         
-        this.sessionStorageService.setItem('user', JSON.stringify(user));
-        this.sessionStorageService.setItem('users', JSON.stringify(users));
+        this.storageService.setItem('user', JSON.stringify(user));
+        this.storageService.setItem('users', JSON.stringify(users));
     }
 
     putIncident(incident: Incident, isNew: boolean): Promise<Incident> {
@@ -102,9 +102,9 @@ export class DatabaseService {
 
     private afterPutIncident(incident: Incident): void {
         let incidents = [] as Incident[];
-        const incidentsStorage = this.sessionStorageService.getItem('incidents');
+        const incidentsStorage = this.storageService.getItem('incidents');
         if (incidentsStorage) {
-            incidents = JSON.parse(this.sessionStorageService.getItem('incidents'));
+            incidents = JSON.parse(this.storageService.getItem('incidents'));
             let index = incidents.findIndex((d: Incident) => d.uid === incident.uid);
             if (index > -1) {
                 incidents[index] = incident;
@@ -117,7 +117,7 @@ export class DatabaseService {
             incidents.push(incident);
         }
         
-        this.sessionStorageService.setItem('incidents', JSON.stringify(incidents));
+        this.storageService.setItem('incidents', JSON.stringify(incidents));
     }
 
     getIncidents(): Observable<Incident[]> {
@@ -128,7 +128,7 @@ export class DatabaseService {
                 result.uid = doc.id;
                 return result;
             })),
-            tap(incidents => this.sessionStorageService.setItem('incidents', JSON.stringify(incidents))),
+            tap(incidents => this.storageService.setItem('incidents', JSON.stringify(incidents))),
             catchError(err => of([])),
         );
     }

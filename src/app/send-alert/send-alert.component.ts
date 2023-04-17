@@ -1,16 +1,16 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { MatTableDataSource } from '@angular/material/table';
 import { Router, ActivatedRoute } from '@angular/router';
+import { first, map, tap } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 import { fadeInOnEnterAnimation } from 'angular-animations';
 import { DatabaseService } from '../core/database.service';
-import { SessionStorageService } from '../core/session-storage-service';
-import { first, map, tap } from 'rxjs/operators';
+import { StorageService } from '../core/session-storage-service';
+import { MessageStatus, OutgoingMessage } from '../model/message';
 import { Incident } from '../model/incident';
 import { User } from '../model/user';
 import { Trip } from '../model/trip';
-import { MatTableDataSource } from '@angular/material/table';
-import { MessageStatus, OutgoingMessage } from '../model/message';
 
 @Component({
   selector: 'app-send-alert',
@@ -29,7 +29,6 @@ export class SendAlertComponent implements OnInit, OnDestroy {
   messagesDataSource!: MatTableDataSource<OutgoingMessage>;
   outgoingMessage!: string;
   sendingMessages = false;
-  allMessagesSent = false;
 
   MessageStatus = MessageStatus;
 
@@ -39,11 +38,11 @@ export class SendAlertComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private db: DatabaseService,
-    private sessionStorageService: SessionStorageService,
+    private storageService: StorageService,
   ) { }
 
   ngOnInit(): void {
-    this.user = this.sessionStorageService.getLoggedInUser();
+    this.user = this.storageService.getLoggedInUser();
     this.loadIncident();
     this.loadTrips();
 
@@ -56,7 +55,7 @@ export class SendAlertComponent implements OnInit, OnDestroy {
   private loadIncident(): void {
     const incidentUid = this.route.snapshot.paramMap.get('uid');
     if (incidentUid) {
-      if (!this.sessionStorageService.getIncidents()?.length) {
+      if (!this.storageService.getIncidents()?.length) {
         this.db.getIncidents().pipe(
           first(),
           map(incidents => incidents.find(i => i.uid === incidentUid)),
@@ -64,13 +63,13 @@ export class SendAlertComponent implements OnInit, OnDestroy {
         );
       }
       else {
-        this.incident = this.sessionStorageService.getIncident(incidentUid);
+        this.incident = this.storageService.getIncident(incidentUid);
       }
     }
   }
 
   private loadTrips(): void {
-    this.trips = this.sessionStorageService.getTripsInRadius();
+    this.trips = this.storageService.getTripsInRadius();
     this.dataSource = new MatTableDataSource(this.trips);
   }
 
@@ -79,7 +78,7 @@ export class SendAlertComponent implements OnInit, OnDestroy {
   }
 
   submit(): void {
-    sessionStorage.setItem('outgoingMessage', this.outgoingMessage);
+    this.storageService.setItem('outgoingMessage', this.outgoingMessage);
     this.sendingMessages = true;
     this.messagesDataSource = new MatTableDataSource(this.trips.map(trip => {
       return {
@@ -97,17 +96,20 @@ export class SendAlertComponent implements OnInit, OnDestroy {
   }
 
   private sendMessageSimulatorStart(): void {
+    let timeoutArr = [];
     for (let message of this.messagesDataSource.data) {
+      let randTimeout = this.randomIntFromInterval(1_000, 10_000);
+      timeoutArr.push(randTimeout);
       setTimeout(() => {
         message.status = this.randomIntFromInterval(1, 10) > 2 ? MessageStatus.APPROVED : 
         this.randomIntFromInterval(1, 2) === 1 ? MessageStatus.FAILURE : MessageStatus.DECLINED;
-      }, this.randomIntFromInterval(1_000, 10_000));
+      }, randTimeout);
     }
 
     setTimeout(() => {
-      this.allMessagesSent = true;
+      this.storageService.setItem('outgoingMessageStatuses', JSON.stringify(this.messagesDataSource.data));
       this.router.navigate(['dashboard', this.incident?.uid]);
-    }, 10_000);
+    }, Math.max(...timeoutArr));
   }
 
   private randomIntFromInterval(min: number, max: number) { // min and max included 

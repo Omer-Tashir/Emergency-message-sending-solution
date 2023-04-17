@@ -6,7 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Incident, IncidentType, RiskType } from 'src/app/model/incident';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { DatabaseService } from 'src/app/core/database.service';
-import { SessionStorageService } from 'src/app/core/session-storage-service';
+import { StorageService } from 'src/app/core/session-storage-service';
 import { finalize, first, map, takeUntil, tap } from 'rxjs/operators';
 import { Marker } from 'src/app/model/google-maps';
 import { Trip } from 'src/app/model/trip';
@@ -60,12 +60,12 @@ export class IncidentComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private db: DatabaseService,
     private mapsAPILoader: MapsAPILoader,
-    private sessionStorageService: SessionStorageService,
+    private storageService: StorageService,
   ) {}
 
   ngOnInit(): void {
-    this.user = this.sessionStorageService.getLoggedInUser();
-    this.trips = this.sessionStorageService.getTrips();
+    this.user = this.storageService.getLoggedInUser();
+    this.trips = this.storageService.getTrips();
 
     for (let type of Object.values(RiskType)) {
       this.riskTypes.push(type);
@@ -90,7 +90,7 @@ export class IncidentComponent implements OnInit, OnDestroy {
         console.log('isNewIncident: ' + this.isNewIncident);
       });
 
-      if (!this.sessionStorageService.getIncidents()?.length) {
+      if (!this.storageService.getIncidents()?.length) {
         this.db.getIncidents().pipe(
           first(),
           map(incidents => incidents.find(i => i.uid === incidentUid)),
@@ -99,7 +99,7 @@ export class IncidentComponent implements OnInit, OnDestroy {
         ).subscribe();
       }
       else {
-        this.incident = this.sessionStorageService.getIncident(incidentUid);
+        this.incident = this.storageService.getIncident(incidentUid);
         this.initForm();
       }
     }
@@ -110,7 +110,7 @@ export class IncidentComponent implements OnInit, OnDestroy {
 
   submit(): void {
     const trips = this.getTripsInRadius();
-    sessionStorage.setItem('tripsInRadius', JSON.stringify(trips));
+    this.storageService.setItem('tripsInRadius', JSON.stringify(trips));
 
     if (this.hasChanges || this.isNewIncident) {
       from(this.db.putIncident({...this.form.value} as Incident, this.isNewIncident)).pipe(
@@ -189,16 +189,16 @@ export class IncidentComponent implements OnInit, OnDestroy {
           );
         }
 
-        if (sessionStorage.getItem('radius')) {
-          this.radius = Number(sessionStorage.getItem('radius'));
+        if (this.storageService.getItem('radius')) {
+          this.radius = Number(this.storageService.getItem('radius'));
         }
 
-        if (sessionStorage.getItem('radiusLat')) {
-          this.radiusLat = Number(sessionStorage.getItem('radiusLat'));
+        if (this.storageService.getItem('radiusLat')) {
+          this.radiusLat = Number(this.storageService.getItem('radiusLat'));
         }
 
-        if (sessionStorage.getItem('radiusLong')) {
-          this.radiusLong = Number(sessionStorage.getItem('radiusLong'));
+        if (this.storageService.getItem('radiusLong')) {
+          this.radiusLong = Number(this.storageService.getItem('radiusLong'));
         }
       });
     }
@@ -207,14 +207,14 @@ export class IncidentComponent implements OnInit, OnDestroy {
   radiusDragEnd($event: any) {
     this.radiusLat = $event.coords.lat;
     this.radiusLong = $event.coords.lng;
-    sessionStorage.setItem('radiusLat', ''+this.radiusLat);
-    sessionStorage.setItem('radiusLong', ''+this.radiusLong);
+    this.storageService.setItem('radiusLat', ''+this.radiusLat);
+    this.storageService.setItem('radiusLong', ''+this.radiusLong);
     this.showHideMarkers();
   }
 
   event(type: any, $event: any) {
     this.radius = $event;
-    sessionStorage.setItem('radius', ''+this.radius);
+    this.storageService.setItem('radius', ''+this.radius);
     this.showHideMarkers();
   }
 

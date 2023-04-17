@@ -5,6 +5,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { catchError, filter, first, map, switchMap, tap } from 'rxjs/operators';
 import { EMPTY, from, Observable, of } from 'rxjs';
 
+import { StorageService } from '../core/session-storage-service';
 import { AlertService } from '../core/alerts/alert.service';
 import { DatabaseService } from '../core/database.service';
 import { User } from '../model/user';
@@ -16,10 +17,11 @@ export class AuthService {
     users: User[] = [];
 
     constructor(
+        private router: Router,
         private db: DatabaseService,
         private afAuth: AngularFireAuth,
-        private router: Router,
-        private alertService: AlertService
+        private alertService: AlertService,
+        private storageService: StorageService,
     ) { }
 
     login(username: string, password: string): void {
@@ -85,7 +87,7 @@ export class AuthService {
         }
 
         this.afAuth.signOut().then(() => {
-            sessionStorage.clear();
+            this.storageService.clear();
             this.router.navigate(['login']);
         });
     }

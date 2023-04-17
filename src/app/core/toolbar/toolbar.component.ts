@@ -3,7 +3,7 @@ import { fadeInOnEnterAnimation } from 'angular-animations';
 import { User } from 'src/app/model/user';
 
 import { AuthService } from '../../auth/auth.service';
-import { SessionStorageService } from '../session-storage-service';
+import { StorageService } from '../session-storage-service';
 
 @Component({
   selector: 'app-toolbar',
@@ -17,7 +17,7 @@ export class ToolbarComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private sessionStorageService: SessionStorageService
+    private storageService: StorageService
   ) {}
 
   logout(): void {
@@ -25,6 +25,6 @@ export class ToolbarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.user = this.sessionStorageService.getLoggedInUser();
+    this.user = this.storageService.getLoggedInUser();
   }
 }

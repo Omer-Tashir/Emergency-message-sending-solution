@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { fadeInOnEnterAnimation } from 'angular-animations';
 import { Subject } from 'rxjs';
 import { PapaParseService } from 'ngx-papaparse';
-import { SessionStorageService } from '../core/session-storage-service';
+import { StorageService } from '../core/session-storage-service';
 import { User } from '../model/user';
 import { Trip, TripLocation, TripTutor } from '../model/trip';
 import { AngularFirestore } from '@angular/fire/firestore';
@@ -26,11 +26,11 @@ export class CrmComponent implements OnInit, OnDestroy {
     private router: Router,
     private papa: PapaParseService,
     private firestore: AngularFirestore,
-    private sessionStorageService: SessionStorageService,
+    private storageService: StorageService,
   ) {}
 
   ngOnInit(): void {
-    this.user = this.sessionStorageService.getLoggedInUser();
+    this.user = this.storageService.getLoggedInUser();
     this.incidentUid = this.firestore.createId();
   }
 
@@ -39,7 +39,7 @@ export class CrmComponent implements OnInit, OnDestroy {
   }
 
   submit(): void {
-    this.sessionStorageService.setItem('trips', JSON.stringify(this.trips));
+    this.storageService.setItem('trips', JSON.stringify(this.trips));
     this.router.navigate(['incident', this.incidentUid]);
   }
 

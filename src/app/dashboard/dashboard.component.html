@@ -4,6 +4,40 @@
     
     <h1>אירוע מספר: {{incident?.uid}}</h1>
 
+    <div class="dashboard-container">
+        <div class="dashboard-container--right">
+            <div class="dashboard-item">
+                <p>אנשי קשר</p>
+                <strong [countUp]="contacts" [options]="countUpOptions"></strong>
+            </div>
+            <div class="dashboard-item">
+                <p>בתהליך</p>
+                <strong [countUp]="pending" [options]="countUpOptions"></strong>
+            </div>
+            <div class="dashboard-item">
+                <p>כישלון חיוג</p>
+                <strong [countUp]="failed" [options]="countUpOptions"></strong>
+            </div>
+            <div class="dashboard-item">
+                <p>דחית שיחה</p>
+                <strong [countUp]="declined" [options]="countUpOptions"></strong>
+            </div>
+            <div class="dashboard-item">
+                <p>קבלת הודעה</p>
+                <strong [countUp]="received" [options]="countUpOptions"></strong>
+            </div>
+            <div class="dashboard-item">
+                <p>אחוז קבלה</p>
+                <strong [countUp]="successRate" [options]="countUpOptions"></strong>
+            </div>
+        </div>
+        <div class="dashboard-container--left">
+            <canvas baseChart class="dashboard-container__canvas" [data]="chartData" [labels]="chartLabels"
+                [chartType]="chartType" [plugins]="chartPlugins" [options]="chartOptions" [colors]="chartColors">
+            </canvas>
+        </div>
+    </div>
+
     <button class="submit-btn" mat-raised-button (click)="complete()" color="warn">
         סיים אירוע
     </button>

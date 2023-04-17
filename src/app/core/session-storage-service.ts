@@ -1,23 +1,24 @@
 import { Injectable } from '@angular/core';
 import { Incident } from '../model/incident';
+import { OutgoingMessage } from '../model/message';
 import { Trip } from '../model/trip';
 import { User } from '../model/user';
 
 @Injectable({
     providedIn: 'root'
 })
-export class SessionStorageService {
+export class StorageService {
 
   public setItem(key: string, value: string) {
-    sessionStorage.setItem(key, value);
+    localStorage.setItem(key, value);
   }
     
   public getItem(key: string): any { 
-    return sessionStorage.getItem(key);
+    return localStorage.getItem(key);
   }
 
   public removeItem(key:string) {
-    sessionStorage.removeItem(key);
+    localStorage.removeItem(key);
   }
 
   getLoggedInUser(): User | undefined {
@@ -73,7 +74,16 @@ export class SessionStorageService {
     return [];
   }
 
+  getOutgoingMessageStatuses(): OutgoingMessage[] {
+    const loadStatuses = this.getItem('outgoingMessageStatuses');
+    if (!!loadStatuses) {
+      return JSON.parse(loadStatuses) as OutgoingMessage[];
+    }
+
+    return [];
+  }
+
   public clear() {
-    sessionStorage.clear(); 
+    localStorage.clear(); 
   }
 }

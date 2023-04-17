@@ -1,0 +1,33 @@
+.dashboard-container {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    margin: 50px auto;
+    gap: 100px;
+
+    &--left {
+
+    }
+
+    &--right {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(250px, 1fr));
+        align-items: center;
+        gap: 15px;
+    }
+}
+
+.dashboard-item {
+    background: #84A24C;
+    padding: 15px;
+    text-align: center;
+
+    & > p {
+        font-size: medium;
+        margin-bottom: 15px;
+    }
+
+    & > strong {
+        font-size: xx-large;
+        font-weight: bold;
+    }
+}

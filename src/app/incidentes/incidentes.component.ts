@@ -6,7 +6,7 @@ import { merge, Observable, of, Subject } from 'rxjs';
 import { catchError, first, map, startWith, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { AlertService } from '../core/alerts/alert.service';
 import { DatabaseService } from '../core/database.service';
-import { SessionStorageService } from '../core/session-storage-service';
+import { StorageService } from '../core/session-storage-service';
 import { Incident } from '../model/incident';
 import { User } from '../model/user';
 import { Router } from '@angular/router';
@@ -50,12 +50,12 @@ export class IncidentesComponent implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private db: DatabaseService,
     private alertService: AlertService,
-    private sessionStorageService: SessionStorageService,
+    private storageService: StorageService,
     private cdref: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    this.user = this.sessionStorageService.getLoggedInUser();
+    this.user = this.storageService.getLoggedInUser();
   }
 
   ngAfterViewInit(): void {
@@ -96,14 +96,14 @@ export class IncidentesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private getIncidents(sort: string, order: SortDirection, page: number): Observable<Incident[]> {
-    if (!this.sessionStorageService.getIncidents()?.length) {
+    if (!this.storageService.getIncidents()?.length) {
       return this.db.getIncidents().pipe(
         first(),
         map(res => this.sortIncidents(res, sort, order, page))
       );
     }
     else {
-      return of(this.sessionStorageService.getIncidents()).pipe(
+      return of(this.storageService.getIncidents()).pipe(
         map(res => this.sortIncidents(res, sort, order, page))
       );
     }

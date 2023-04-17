@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { fadeInOnEnterAnimation } from 'angular-animations';
 
-import { SessionStorageService } from './core/session-storage-service';
+import { StorageService } from './core/session-storage-service';
 import { AlertService } from './core/alerts/alert.service';
 import { Alerts } from './core/alerts/alerts';
 
@@ -16,7 +16,7 @@ import * as moment from 'moment/moment';
 export class AppComponent implements OnInit {
 
   constructor(
-    private sessionStorageService: SessionStorageService,
+    private storageService: StorageService,
     private alertService: AlertService
   ) {
     Alerts.service = this.alertService;
@@ -24,7 +24,7 @@ export class AppComponent implements OnInit {
   }
 
   isUserLoggedIn(): boolean {
-    return !!this.sessionStorageService.getLoggedInUser();
+    return !!this.storageService.getLoggedInUser();
   }
 
   ngOnInit(): void {

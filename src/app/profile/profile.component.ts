@@ -4,7 +4,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { fadeInOnEnterAnimation } from 'angular-animations';
 import { User } from '../model/user';
 import { DatabaseService } from '../core/database.service';
-import { SessionStorageService } from '../core/session-storage-service';
+import { StorageService } from '../core/session-storage-service';
 import { from } from 'rxjs';
 import { delay, first, map, tap } from 'rxjs/operators';
 import { AlertService } from '../core/alerts/alert.service';
@@ -22,11 +22,11 @@ export class ProfileComponent implements OnInit {
   constructor(
     private db: DatabaseService,
     private alertService: AlertService,
-    private sessionStorageService: SessionStorageService,
+    private storageService: StorageService,
   ) {}
 
   ngOnInit(): void {
-    this.user = this.sessionStorageService.getLoggedInUser();
+    this.user = this.storageService.getLoggedInUser();
     this.initForm();
   }
 
