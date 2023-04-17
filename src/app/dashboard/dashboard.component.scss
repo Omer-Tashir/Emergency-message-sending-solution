@@ -1,12 +1,12 @@
+:host {
+    position: relative;
+}
+
 .dashboard-container {
     display: grid;
     grid-template-columns: 3fr 1fr;
     margin: 50px auto;
     gap: 100px;
-
-    &--left {
-
-    }
 
     &--right {
         display: grid;
@@ -30,4 +30,8 @@
         font-size: xx-large;
         font-weight: bold;
     }
+}
+
+.resend-btn, .new-message-btn {
+    margin-left: 5px;
 }

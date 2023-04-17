@@ -1,16 +1,13 @@
 import { BaseChartDirective, Color, MultiDataSet, PluginServiceGlobalRegistrationAndOptions } from 'ng2-charts';
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/firestore';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { fadeInOnEnterAnimation } from 'angular-animations';
-import { PapaParseService } from 'ngx-papaparse';
 import { ChartOptions, ChartType } from 'chart.js';
 import { Subject } from 'rxjs';
 
 import { User } from '../model/user';
 import { Incident } from '../model/incident';
 import { MessageStatus } from '../model/message';
-import { DatabaseService } from '../core/database.service';
 import { StorageService } from '../core/session-storage-service';
 
 @Component({
@@ -24,6 +21,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   user?: User;
   incident?: Incident;
+  isLoading = false;
 
   countUpOptions = {
     duration: 1,
@@ -100,12 +98,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   
   constructor(
-    private router: Router,
     private route: ActivatedRoute,
-    private db: DatabaseService,
-    private papa: PapaParseService,
-    private firestore: AngularFirestore,
     private storageService: StorageService,
+    private cdref: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -116,6 +111,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
 
     this.loadStatuses();
+    this.cdref.detectChanges();
   }
 
   private loadStatuses(): void {
@@ -151,14 +147,51 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }, 0);
 
     this.successRate = (this.received * 100) / this.contacts;
-
+    this.chartData = [];
     this.chartData[0] = [this.pending, this.failed, this.declined, this.received];
     this.chartLabels = ['בתהליך', 'כישלון חיוג', 'דחיית שיחה', 'קבלת הודעה'];
     this.chartColors[0].backgroundColor = ['silver', 'orange', 'red', 'green'];
+    this.isLoading = false;
+    this.cdref.detectChanges();
   }
 
   complete(): void {
+    this.cdref.detectChanges();
+  }
 
+  newMessage(): void {
+    this.cdref.detectChanges();
+  }
+
+  resend(): void {
+    this.sendMessageSimulatorStart();
+    this.cdref.detectChanges();
+  }
+
+  private sendMessageSimulatorStart(): void {
+    let timeoutArr = [];
+    let statuses = this.storageService.getOutgoingMessageStatuses();
+    
+    this.isLoading = true;
+    this.cdref.detectChanges();
+
+    for (let message of statuses.filter(s => s.status !== MessageStatus.APPROVED)) {
+      let randTimeout = this.randomIntFromInterval(1_000, 10_000);
+      timeoutArr.push(randTimeout);
+      setTimeout(() => {
+        message.status = this.randomIntFromInterval(1, 10) > 4 ? MessageStatus.APPROVED : 
+        this.randomIntFromInterval(1, 2) === 1 ? MessageStatus.FAILURE : MessageStatus.DECLINED;
+      }, randTimeout);
+    }
+
+    setTimeout(() => {
+      this.storageService.setItem('outgoingMessageStatuses', JSON.stringify(statuses));
+      this.loadStatuses();
+    }, Math.max(...timeoutArr));
+  }
+
+  private randomIntFromInterval(min: number, max: number) { // min and max included 
+    return Math.floor(Math.random() * (max - min + 1) + min);
   }
 
   ngOnDestroy(): void {

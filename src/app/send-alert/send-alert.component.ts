@@ -101,7 +101,7 @@ export class SendAlertComponent implements OnInit, OnDestroy {
       let randTimeout = this.randomIntFromInterval(1_000, 10_000);
       timeoutArr.push(randTimeout);
       setTimeout(() => {
-        message.status = this.randomIntFromInterval(1, 10) > 2 ? MessageStatus.APPROVED : 
+        message.status = this.randomIntFromInterval(1, 10) > 4 ? MessageStatus.APPROVED : 
         this.randomIntFromInterval(1, 2) === 1 ? MessageStatus.FAILURE : MessageStatus.DECLINED;
       }, randTimeout);
     }

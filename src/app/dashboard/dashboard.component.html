@@ -38,7 +38,20 @@
         </div>
     </div>
 
+    <button class="resend-btn" mat-raised-button (click)="resend()" color="primary" 
+        [disabled]="!failed && !declined">
+        שלח הודעה בשנית
+    </button>
+
+    <button class="new-message-btn" mat-raised-button (click)="newMessage()" color="primary">
+        הפצת הודעה נוספת
+    </button>
+
     <button class="submit-btn" mat-raised-button (click)="complete()" color="warn">
         סיים אירוע
     </button>
+</div>
+
+<div class="loading-shade" *ngIf="isLoading">
+    <mat-spinner></mat-spinner>
 </div>
