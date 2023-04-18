@@ -82,6 +82,7 @@ export class SendAlertComponent implements OnInit, OnDestroy {
     this.sendingMessages = true;
     this.messagesDataSource = new MatTableDataSource(this.trips.map(trip => {
       return {
+        receiver: `${trip.tutor.firstname} ${trip.tutor.lastname}`,
         status: MessageStatus.PENDING,
         toPhone: trip.tutor.phone1,
         type: trip.tutor.deliveryType

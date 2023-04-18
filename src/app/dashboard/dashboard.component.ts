@@ -1,14 +1,18 @@
 import { BaseChartDirective, Color, MultiDataSet, PluginServiceGlobalRegistrationAndOptions } from 'ng2-charts';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { MatTableDataSource } from '@angular/material/table';
+import { ActivatedRoute, Router } from '@angular/router';
 import { fadeInOnEnterAnimation } from 'angular-animations';
 import { ChartOptions, ChartType } from 'chart.js';
 import { Subject } from 'rxjs';
 
 import { User } from '../model/user';
 import { Incident } from '../model/incident';
-import { MessageStatus } from '../model/message';
+import { MessageStatus, OutgoingMessage } from '../model/message';
 import { StorageService } from '../core/session-storage-service';
+
+import * as XLSX from 'xlsx'; 
+import * as moment from 'moment/moment';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,6 +23,7 @@ import { StorageService } from '../core/session-storage-service';
 export class DashboardComponent implements OnInit, OnDestroy {
   @ViewChild(BaseChartDirective) chart!: BaseChartDirective;
 
+  today: any;
   user?: User;
   incident?: Incident;
   isLoading = false;
@@ -36,6 +41,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   declined: number = 0;
   received: number = 0;
   successRate: number = 0;
+
+  MessageStatus = MessageStatus;
+  messagesColumns: string[] = ['toPhone', 'type', 'status'];
+  messagesDataSource!: MatTableDataSource<OutgoingMessage>;
 
   chartLabels: any[] = [];
   chartData: MultiDataSet = [[]];
@@ -98,12 +107,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   
   constructor(
+    private router: Router,
     private route: ActivatedRoute,
     private storageService: StorageService,
     private cdref: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    this.today = moment().format('LLLL');
     this.user = this.storageService.getLoggedInUser();
     const incidentUid = this.route.snapshot.paramMap.get('uid');
     if (incidentUid) {
@@ -116,6 +127,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private loadStatuses(): void {
     const statuses = this.storageService.getOutgoingMessageStatuses();
+    this.messagesDataSource = new MatTableDataSource(statuses);
     this.contacts = statuses.reduce((count, status) => count += 1, 0);
 
     this.pending = statuses.reduce((count, status) => {
@@ -160,7 +172,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   newMessage(): void {
-    this.cdref.detectChanges();
+    this.router.navigate(['sendAlert', this.route.snapshot.paramMap.get('uid')]);
+  }
+
+  report(): void {
+    const fileName = `סטטוס קבלת הודעות - ${this.today}.xlsx`; 
+    let element = document.getElementById('excel-table'); 
+    const ws: XLSX.WorkSheet =XLSX.utils.table_to_sheet(element);
+
+    /* generate workbook and add the worksheet */
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'סטטוס קבלת הודעות');
+
+    /* save to file */
+    XLSX.writeFile(wb, fileName);
   }
 
   resend(): void {

@@ -67,10 +67,10 @@
 
     <p class="hint">התהליך עשוי לקחת מספר שניות, נא לא לסגור את הדפדפן עד לסיום התהליך...</p>
 
-    <table mat-table [dataSource]="messagesDataSource">
+    <table mat-table [dataSource]="messagesDataSource" class="msg-data-source-table">
         <ng-container matColumnDef="toPhone">
             <th mat-header-cell *matHeaderCellDef> נמען </th>
-            <td mat-cell *matCellDef="let message"> {{message.toPhone}} </td>
+            <td mat-cell *matCellDef="let message"> {{message.receiver}} - {{message.toPhone}} </td>
         </ng-container>
 
         <ng-container matColumnDef="type">

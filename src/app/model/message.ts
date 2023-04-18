@@ -1,4 +1,5 @@
 export interface OutgoingMessage {
+    receiver: string;
     toPhone: string;
     type: MessageDeliveryType;
     status: MessageStatus;
