@@ -24,7 +24,7 @@ export class SendAlertComponent implements OnInit, OnDestroy {
   trips: Trip[] = [];
   hints: string[] = ['שם המדריך', 'שם טיול', 'מזהה טיול', 'איזור טיול', 'איזור פינוי', 'סוג התראה'];
   columns: string[] = ['uid', 'name', 'tutor', 'groupSize', 'currentLocation'];
-  messagesColumns: string[] = ['toPhone', 'type', 'status'];
+  messagesColumns: string[] = ['toPhone', 'group', 'type', 'status'];
   dataSource!: MatTableDataSource<Trip>;
   messagesDataSource!: MatTableDataSource<OutgoingMessage>;
   outgoingMessage!: string;
@@ -83,9 +83,11 @@ export class SendAlertComponent implements OnInit, OnDestroy {
     this.messagesDataSource = new MatTableDataSource(this.trips.map(trip => {
       return {
         receiver: `${trip.tutor.firstname} ${trip.tutor.lastname}`,
+        group: `${trip.uid} - ${trip.name}, ${trip.groupSize} מטיילים`,
         status: MessageStatus.PENDING,
         toPhone: trip.tutor.phone1,
-        type: trip.tutor.deliveryType
+        type: trip.tutor.deliveryType,
+        messageCount: 0,
       } as OutgoingMessage
     }));
 
@@ -102,6 +104,8 @@ export class SendAlertComponent implements OnInit, OnDestroy {
       let randTimeout = this.randomIntFromInterval(1_000, 10_000);
       timeoutArr.push(randTimeout);
       setTimeout(() => {
+        message.messageCount += 1;
+        message.lastMessageSendDate = new Date();
         message.status = this.randomIntFromInterval(1, 10) > 4 ? MessageStatus.APPROVED : 
         this.randomIntFromInterval(1, 2) === 1 ? MessageStatus.FAILURE : MessageStatus.DECLINED;
       }, randTimeout);

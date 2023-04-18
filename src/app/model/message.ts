@@ -1,8 +1,11 @@
 export interface OutgoingMessage {
     receiver: string;
     toPhone: string;
+    group: string;
     type: MessageDeliveryType;
     status: MessageStatus;
+    lastMessageSendDate: Date;
+    messageCount: number;
 }
 
 export enum MessageDeliveryType {

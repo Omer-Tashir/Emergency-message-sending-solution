@@ -73,6 +73,11 @@
             <td mat-cell *matCellDef="let message"> {{message.receiver}} - {{message.toPhone}} </td>
         </ng-container>
 
+        <ng-container matColumnDef="group">
+            <th mat-header-cell *matHeaderCellDef> קבוצה </th>
+            <td mat-cell *matCellDef="let message"> {{message.group}} </td>
+        </ng-container>
+
         <ng-container matColumnDef="type">
             <th mat-header-cell *matHeaderCellDef> דרך העברת ההודעה </th>
             <td mat-cell *matCellDef="let message"> {{message.type}} </td>

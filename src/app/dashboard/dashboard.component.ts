@@ -13,6 +13,7 @@ import { StorageService } from '../core/session-storage-service';
 
 import * as XLSX from 'xlsx'; 
 import * as moment from 'moment/moment';
+import { DatabaseService } from '../core/database.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -43,7 +44,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   successRate: number = 0;
 
   MessageStatus = MessageStatus;
-  messagesColumns: string[] = ['toPhone', 'type', 'status'];
+  messagesColumns: string[] = ['toPhone', 'group', 'type', 'status', 'messageCount', 'lastMessageSendDate'];
   messagesDataSource!: MatTableDataSource<OutgoingMessage>;
 
   chartLabels: any[] = [];
@@ -110,6 +111,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private storageService: StorageService,
+    private db: DatabaseService,
     private cdref: ChangeDetectorRef
   ) {}
 
@@ -168,7 +170,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   complete(): void {
-    this.cdref.detectChanges();
+    this.storageService.removeItem('outgoingMessage');
+    this.storageService.removeItem('outgoingMessageStatuses');
+    this.storageService.removeItem('radiusLong');
+    this.storageService.removeItem('radiusLat');
+    this.storageService.removeItem('tripsInRadius');
+
+    this.db.removeIncident(this.incident);
+    this.router.navigate(['incidents']).then(() => window.location.reload());
   }
 
   newMessage(): void {
@@ -204,6 +213,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       let randTimeout = this.randomIntFromInterval(1_000, 10_000);
       timeoutArr.push(randTimeout);
       setTimeout(() => {
+        message.messageCount += 1;
+        message.lastMessageSendDate = new Date();
         message.status = this.randomIntFromInterval(1, 10) > 4 ? MessageStatus.APPROVED : 
         this.randomIntFromInterval(1, 2) === 1 ? MessageStatus.FAILURE : MessageStatus.DECLINED;
       }, randTimeout);

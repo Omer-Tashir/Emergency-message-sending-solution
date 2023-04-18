@@ -26,7 +26,7 @@ export class IncidentesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  columns: string[] = ['uid', 'name', 'date', 'successRate'];
+  columns: string[] = ['uid', 'name', 'date'];
   dataSource: MatTableDataSource<Incident> = new MatTableDataSource<Incident>([]);
 
   days: string[] = [
@@ -126,12 +126,6 @@ export class IncidentesComponent implements OnInit, AfterViewInit, OnDestroy {
       case 'name':
         this.dataSource.data = incidents.sort(
           (a, b) => order === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
-        );
-        break;
-
-      case 'successRate':
-        this.dataSource.data = incidents.sort(
-          (a, b) => order === 'asc' ? (a.successRate ?? 0) - (b.successRate ?? 0) : (b.successRate ?? 0) - (a.successRate ?? 0)
         );
         break;
     }

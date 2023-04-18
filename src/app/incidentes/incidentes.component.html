@@ -33,11 +33,6 @@
                 </td>
             </ng-container>
     
-            <ng-container matColumnDef="successRate">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header="successRate">אחוז הצלחה</th>
-                <td mat-cell *matCellDef="let row">{{row?.successRate | percent}}</td>
-            </ng-container>
-    
             <tr mat-header-row *matHeaderRowDef="columns"></tr>
             <tr mat-row *matRowDef="let row; columns: columns;"></tr>
         </table>

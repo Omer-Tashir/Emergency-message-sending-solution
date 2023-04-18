@@ -132,4 +132,24 @@ export class DatabaseService {
             catchError(err => of([])),
         );
     }
+
+    removeIncident(incident: Incident | undefined): void {
+        if (incident) {
+            this.db.collection('incidents')
+                .doc(incident.uid)
+                .delete()
+                .then(() => this.afterRemoveIncident(incident))
+        }
+    }
+
+    private afterRemoveIncident(incident: Incident): void {
+        let incidents = [] as Incident[];
+        const incidentsStorage = this.storageService.getItem('incidents');
+        if (incidentsStorage) {
+            incidents = JSON.parse(this.storageService.getItem('incidents'));
+            incidents = incidents.filter(i => i.uid !== incident.uid);
+        }
+        
+        this.storageService.setItem('incidents', JSON.stringify(incidents));
+    }
 }
