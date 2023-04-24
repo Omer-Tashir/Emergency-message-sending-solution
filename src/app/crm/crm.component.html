@@ -4,6 +4,8 @@
     
     <h1>העלה קובץ CRM</h1>
 
+    <button class="use-storage" mat-raised-button (click)="useStorage()" color="primary">משוך נתונים ממערכת CRM</button>
+
     <div class="upload-container">
         <img src="assets/csv.png" alt="csv">
         <input type="file" accept=".csv" (change)="handleFileSelect($event)">

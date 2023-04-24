@@ -43,6 +43,7 @@ import { ArraySortPipe } from './core/sort.pipe';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireAuthModule } from '@angular/fire/auth';
+import { AngularFireStorageModule } from '@angular/fire/storage';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { environment } from '../environments/environment';
 
@@ -124,6 +125,7 @@ const CUSTOM_DATE_FORMAT = {
     AngularFirestoreModule, // imports firebase/firestore, only needed for database features
     AngularFireAuthModule, // imports firebase/auth, only needed for auth features
     AngularFireDatabaseModule,
+    AngularFireStorageModule,
     AuthRoutingModule,
     AppRoutingModule,
   ],
