@@ -1,0 +1,52 @@
+<app-toolbar></app-toolbar>
+
+<div class="main-section" [@fadeInOnEnter]>
+
+    <div class="flex-container">
+        <div class="flex-container--right">
+          <h1>{{isNewUser ? 'יצירת משתמש חדש' : user?.name}}</h1>
+          
+          <section class="form">
+            <div class="inputs-container">
+                <form *ngIf="!!form" [formGroup]="form" novalidate fxLayout="column wrap"
+                    fxLayoutAlign="center center" fxLayoutGap="10px">
+          
+                    <div class="form-inputs-wrapper">
+                        <mat-form-field>
+                            <input matInput type="text" placeholder="שם משתמש" formControlName="username">
+                            <mat-error *ngIf="hasError('username', 'required')">חובה להזין שם משתמש</mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field>
+                            <input matInput type="text" placeholder="שם מלא" formControlName="name">
+                            <mat-error *ngIf="hasError('name', 'required')">חובה להזין שם מלא</mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field>
+                            <input matInput type="text" placeholder="אימייל" formControlName="email">
+                            <mat-error *ngIf="hasError('email', 'required') || hasError('email', 'email')">חובה להזין כתובת אימייל תקינה</mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field>
+                            <input matInput type="password" placeholder="סיסמא" formControlName="password">
+                            <mat-error *ngIf="hasError('password', 'required')">חובה להזין סיסמא</mat-error>
+                        </mat-form-field>
+                    </div>
+                </form>
+
+                <button class="back-btn" mat-raised-button (click)="back()" color="primary">
+                    חזור
+                </button>
+                <button *ngIf="!isNewUser" class="remove-btn" mat-raised-button (click)="remove()" color="primary">
+                    מחק
+                </button>
+                <button class="submit-btn" mat-raised-button (click)="submit()" color="primary"
+                    [disabled]="!!form && !form.valid">
+                    שמור
+                </button>
+            </div>
+          </section>
+        </div>
+      </div>
+
+</div>

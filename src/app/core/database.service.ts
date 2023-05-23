@@ -37,16 +37,47 @@ export class DatabaseService {
         );
     }
 
-    putUser(user: User): Promise<User> {
-        const uid = user.uid ?? this.db.createId();
+    getUsers(): Observable<User[]> {
+        return this.db.collection('users').get().pipe(
+            first(),
+            map(result => result.docs.map(doc => {
+                const result = <User>doc.data();
+                result.uid = doc.id;
+                return result;
+            })),
+            tap(users => this.storageService.setItem('users', JSON.stringify(users))),
+            catchError(err => of([])),
+        );
+    }
+
+    putUser(user: User, isNew: boolean): Promise<User> {
+        const uid = isNew ? this.db.createId(): user.uid;
         const userWithUID = {...user, uid} as User;
 
+        if (isNew) {
+            return this.db
+                .collection(`users`)
+                .doc(uid)
+                .set(userWithUID)
+                .then(() => this.afterPutUser(userWithUID))
+                .then(() => { return userWithUID });
+        }
+            
         return this.db
             .collection(`users`)
             .doc(uid)
-            .set(userWithUID)
+            .update(user)
             .then(() => this.afterPutUser(userWithUID))
             .then(() => { return userWithUID });
+    }
+
+    isUserExist(uid: string): Promise<boolean> {
+        return this.db
+            .collection(`users`)
+            .doc(uid)
+            .get()
+            .toPromise()
+            .then(user => { return user.exists });
     }
 
     private afterPutUser(user: User): void {
@@ -67,6 +98,26 @@ export class DatabaseService {
         }
         
         this.storageService.setItem('user', JSON.stringify(user));
+        this.storageService.setItem('users', JSON.stringify(users));
+    }
+
+    removeUser(user: User | undefined): void {
+        if (user) {
+            this.db.collection('users')
+                .doc(user.uid)
+                .delete()
+                .then(() => this.afterRemoveUser(user))
+        }
+    }
+
+    private afterRemoveUser(user: User): void {
+        let users = [] as User[];
+        const usersStorage = this.storageService.getItem('users');
+        if (usersStorage) {
+            users = JSON.parse(this.storageService.getItem('users'));
+            users = users.filter(i => i.uid !== user.uid);
+        }
+        
         this.storageService.setItem('users', JSON.stringify(users));
     }
 
