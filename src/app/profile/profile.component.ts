@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-
 import { fadeInOnEnterAnimation } from 'angular-animations';
+import { delay, first, map, tap } from 'rxjs/operators';
+import { from } from 'rxjs';
+
 import { User } from '../model/user';
+import { AlertService } from '../core/alerts/alert.service';
 import { DatabaseService } from '../core/database.service';
 import { StorageService } from '../core/session-storage-service';
-import { from } from 'rxjs';
-import { delay, first, map, tap } from 'rxjs/operators';
-import { AlertService } from '../core/alerts/alert.service';
 
 @Component({
   selector: 'app-profile',
@@ -37,7 +37,7 @@ export class ProfileComponent implements OnInit {
       ...this.form.value
     } as User;
 
-    from(this.db.putUser(user)).pipe(
+    from(this.db.putUser(user, false)).pipe(
       first(),
       tap(() => this.alertService.ok('השינויים נשמרו בהצלחה', 'המערכת טוענת את הנתונים המעודכנים')),
       delay(3_000),

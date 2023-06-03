@@ -39,6 +39,14 @@ export class StorageService {
     return [];
   }
 
+  getUser(uid: string): User | undefined {
+    const users = this.getUsers();
+    if (users?.length) {
+      return users.find(i => i.uid === uid);
+    }
+    return undefined;
+  }
+
   getIncidents(): Incident[] {
     const loadIncidents = this.getItem('incidents');
     if (!!loadIncidents) {

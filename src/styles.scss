@@ -804,6 +804,17 @@ td.mat-cell {
   }
 }
 
+.remove-btn {
+  margin-left: 5px !important;
+  margin-bottom: 5px !important;
+  border-bottom: 4px solid red !important;
+  
+  .mat-ripple.mat-button-ripple {
+    z-index: -1;
+    background-color: red !important;
+  }
+}
+
 .marker-label {
   position: relative;
   font-weight: bold;

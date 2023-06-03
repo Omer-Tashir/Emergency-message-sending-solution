@@ -48,7 +48,7 @@ export class AuthService {
         of(this.afAuth.signOut()).pipe(
             switchMap(() => this.signInWithFireAuth(email, password, true)),
             filter(res => !!res),
-            switchMap(uid => this.db.putUser({uid, username, password, name, email} as User)),
+            switchMap(uid => this.db.putUser({uid, username, password, name, email} as User, true)),
             map(() => this.router.navigate(['incidents'])),
         ).subscribe();
     }

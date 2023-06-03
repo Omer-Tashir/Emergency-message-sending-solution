@@ -134,7 +134,7 @@ export class IncidentesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   openIncident(uid: string): void {
-    this.router.navigate(['incident', uid]);
+    this.router.navigate(['dashboard', uid]);
   }
 
   createNewIncident(): void {
