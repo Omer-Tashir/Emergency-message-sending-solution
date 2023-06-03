@@ -6,6 +6,9 @@ import { iif, Observable, of, throwError } from 'rxjs';
 import { StorageService } from '../core/session-storage-service';
 import { Incident } from '../model/incident';
 import { User } from '../model/user';
+import { LoginAttempt } from '../model/login-attempt';
+import { MessageTemplate } from '../model/message-template';
+import { OutgoingMessage } from '../model/message';
 
 @Injectable({
     providedIn: 'root',
@@ -35,6 +38,74 @@ export class DatabaseService {
                     throw new Error(error);
                 })
         );
+    }
+
+    putLoginAttempt(username: string, result: boolean): Promise<LoginAttempt> {
+        const uid = this.db.createId();
+        const attempt = {
+            uid, username, date: new Date(), success: result ? 'הצלחה' : 'כישלון'
+        } as LoginAttempt;
+
+        return this.db
+            .collection(`login-attempts`)
+            .doc(uid)
+            .set(attempt)
+            .then(() => this.afterPutLoginAttempt(attempt))
+            .then(() => { return attempt });
+    }
+
+    private afterPutLoginAttempt(attempt: LoginAttempt): void {
+        let attempts = [] as LoginAttempt[];
+        const attemptsStorage = this.storageService.getItem('login-attempts');
+        if (attemptsStorage) {
+            attempts = JSON.parse(this.storageService.getItem('login-attempts'));
+            let index = attempts.findIndex((d: LoginAttempt) => d.uid === attempt.uid);
+            if (index > -1) {
+                attempts[index] = attempt;
+            }
+            else {
+                attempts.push(attempt);
+            }
+        }
+        else {
+            attempts.push(attempt);
+        }
+        
+        this.storageService.setItem('login-attempts', JSON.stringify(attempts));
+    }
+
+    putOutgoingMessage(message: OutgoingMessage): Promise<OutgoingMessage> {
+        const uid = this.db.createId();
+        const outgoing = {
+            uid, ...message, date: new Date()
+        } as OutgoingMessage;
+
+        return this.db
+            .collection(`outgoing-messages`)
+            .doc(uid)
+            .set(outgoing)
+            .then(() => this.afterPutOutgoingMessage(outgoing))
+            .then(() => { return outgoing });
+    }
+
+    private afterPutOutgoingMessage(message: OutgoingMessage): void {
+        let messages = [] as OutgoingMessage[];
+        const messagesStorage = this.storageService.getItem('outgoing-messages');
+        if (messagesStorage) {
+            messages = JSON.parse(this.storageService.getItem('outgoing-messages'));
+            let index = messages.findIndex((d: OutgoingMessage) => d.uid === message.uid);
+            if (index > -1) {
+                messages[index] = message;
+            }
+            else {
+                messages.push(message);
+            }
+        }
+        else {
+            messages.push(message);
+        }
+        
+        this.storageService.setItem('outgoing-messages', JSON.stringify(messages));
     }
 
     getUsers(): Observable<User[]> {
@@ -180,6 +251,19 @@ export class DatabaseService {
                 return result;
             })),
             tap(incidents => this.storageService.setItem('incidents', JSON.stringify(incidents))),
+            catchError(err => of([])),
+        );
+    }
+
+    getMessageTemplates(): Observable<MessageTemplate[]> {
+        return this.db.collection('message-templates').get().pipe(
+            first(),
+            map(result => result.docs.map(doc => {
+                const result = <MessageTemplate>doc.data();
+                result.uid = doc.id;
+                return result;
+            })),
+            tap(templates => this.storageService.setItem('message-templates', JSON.stringify(templates))),
             catchError(err => of([])),
         );
     }

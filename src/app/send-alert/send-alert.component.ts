@@ -1,8 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router, ActivatedRoute } from '@angular/router';
-import { first, map, tap } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { first, map, takeUntil, tap } from 'rxjs/operators';
+import { FormControl } from '@angular/forms';
+import { Observable, Subject } from 'rxjs';
 
 import { fadeInOnEnterAnimation } from 'angular-animations';
 import { DatabaseService } from '../core/database.service';
@@ -11,6 +12,7 @@ import { MessageStatus, OutgoingMessage } from '../model/message';
 import { Incident } from '../model/incident';
 import { User } from '../model/user';
 import { Trip } from '../model/trip';
+import { MessageTemplate } from '../model/message-template';
 
 @Component({
   selector: 'app-send-alert',
@@ -25,7 +27,9 @@ export class SendAlertComponent implements OnInit, OnDestroy {
   hints: string[] = ['שם המדריך', 'שם טיול', 'מזהה טיול', 'איזור טיול', 'איזור פינוי', 'סוג התראה'];
   columns: string[] = ['uid', 'name', 'tutor', 'groupSize', 'currentLocation'];
   messagesColumns: string[] = ['toPhone', 'group', 'type', 'status'];
+  messageTemplates$!: Observable<MessageTemplate[]>;
   dataSource!: MatTableDataSource<Trip>;
+  messageTplCtrl!: FormControl;
   messagesDataSource!: MatTableDataSource<OutgoingMessage>;
   outgoingMessage!: string;
   sendingMessages = false;
@@ -46,10 +50,12 @@ export class SendAlertComponent implements OnInit, OnDestroy {
     this.loadIncident();
     this.loadTrips();
 
-    this.outgoingMessage = `שלום [שם פרטי],
-טיולך [שם טיול] שמספרו [מספר טיול]
-נמצא באיזור שעלול להוות סיכון עקב התראת [סוג התראה], הנך נדרש להתפנות במיידית מ [איזור טיול], אל [איזור פינוי].
-לאישור קבלת ההודעה יש להשיב ״1״ למספר זה.`;
+    this.messageTemplates$ = this.db.getMessageTemplates();
+    this.messageTplCtrl = new FormControl('');
+    this.messageTplCtrl.valueChanges.pipe(
+      tap(value => this.outgoingMessage = value),
+      takeUntil(this.destroy$)
+    ).subscribe();
   }
 
   private loadIncident(): void {

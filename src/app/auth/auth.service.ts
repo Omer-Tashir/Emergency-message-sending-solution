@@ -30,12 +30,13 @@ export class AuthService {
             first(),
             tap(res => {
                 if (!res) {
+                    this.db.putLoginAttempt(username, false);
                     this.alertService.ok('שגיאת התחברות', 'לא נמצא משתמש עבור הפרטים שהוזנו');
                 }
             }),
             filter(res => !!res),
             map(user => this.signInWithFireAuth(user.email, user.password)),
-            map(() => this.router.navigate(['incidents'])),
+            map(() => this.router.navigate(['incidents']).then(() => this.db.putLoginAttempt(username, true))),
             catchError(err => {
                 console.log(err);
                 this.alertService.httpError(err);
@@ -49,7 +50,7 @@ export class AuthService {
             switchMap(() => this.signInWithFireAuth(email, password, true)),
             filter(res => !!res),
             switchMap(uid => this.db.putUser({uid, username, password, name, email} as User, true)),
-            map(() => this.router.navigate(['incidents'])),
+            map(() => this.router.navigate(['incidents']).then(() => this.db.putLoginAttempt(username, true))),
         ).subscribe();
     }
 

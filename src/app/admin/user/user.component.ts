@@ -111,7 +111,9 @@ export class UserComponent implements OnInit, OnDestroy {
 
   remove(): void {
     this.db.removeUser({...this.form.value} as User);
-    this.router.navigate(['admin']).then(() => window.location.reload());
+    setTimeout(() => {
+      this.router.navigate(['admin']).then(() => window.location.reload());
+    }, 1000);
   }
 
   ngOnDestroy(): void {

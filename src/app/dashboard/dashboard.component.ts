@@ -177,7 +177,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.storageService.removeItem('tripsInRadius');
 
     this.db.removeIncident(this.incident);
-    this.router.navigate(['incidents']).then(() => window.location.reload());
+    setTimeout(() => {
+      this.router.navigate(['incidents']).then(() => window.location.reload());
+    }, 1000);
   }
 
   newMessage(): void {

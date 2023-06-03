@@ -40,6 +40,18 @@
 
     <div class="message-container">
         <h2>ניסוח הודעה</h2>
+
+        <div class="message-template">
+            <mat-label>בחר תבנית הודעה</mat-label>
+            <mat-select [formControl]="messageTplCtrl">
+                <mat-option value=""></mat-option>
+                <mat-option *ngFor="let template of (messageTemplates$ | async)" 
+                    [value]="template.message">
+                    {{template.message}}
+                </mat-option>
+            </mat-select>
+        </div>
+
         <textarea name="message" id="message" cols="150" rows="10" 
             [(ngModel)]="outgoingMessage">
         </textarea>
