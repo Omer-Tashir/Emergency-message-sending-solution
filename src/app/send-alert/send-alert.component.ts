@@ -94,14 +94,26 @@ export class SendAlertComponent implements OnInit, OnDestroy {
         toPhone: trip.tutor.phone1,
         type: trip.tutor.deliveryType,
         messageCount: 0,
+        message: this.getResolvedMessage(trip)
       } as OutgoingMessage
     }));
 
-    this.sendMessageSimulatorStart();
+    const promises = this.messagesDataSource.data.map(message => this.db.putOutgoingMessage(message));
+    Promise.all(promises).then(() => this.sendMessageSimulatorStart());
   }
 
   get submitDisabled(): boolean {
     return !this.outgoingMessage?.length || !this.trips?.length;
+  }
+
+  private getResolvedMessage(trip: Trip): string {
+    return this.outgoingMessage
+      .replace('[שם פרטי]', `${trip.tutor.firstname} ${trip.tutor.lastname}`)
+      .replace('[שם טיול]', trip.name)
+      .replace('[מספר טיול]', trip.uid)
+      .replace('[סוג התראה]', `${this.incident?.type}`)
+      .replace('[איזור טיול]', `${trip.currentLocation.latitude}, ${trip.currentLocation.longitude}`)
+      .replace('[איזור פינוי]', `${trip.currentLocation.latitude}, ${trip.currentLocation.longitude}`);
   }
 
   private sendMessageSimulatorStart(): void {

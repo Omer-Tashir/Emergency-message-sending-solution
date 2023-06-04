@@ -7,6 +7,7 @@ export interface OutgoingMessage {
     status: MessageStatus;
     lastMessageSendDate: Date;
     messageCount: number;
+    message: string;
     date?: Date
 }
 
