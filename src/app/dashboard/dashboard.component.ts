@@ -125,6 +125,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.loadStatuses();
     this.cdref.detectChanges();
+
+    setTimeout(() => {
+      if (this.failed || this.declined) {
+        const interval = setInterval(() => {
+          if (this.failed || this.declined) {
+            this.resend();
+          }
+          else {
+            clearInterval(interval);
+          }
+        }, 10_000);
+      }
+    }, 10_000);
   }
 
   private loadStatuses(): void {
