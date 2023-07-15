@@ -232,6 +232,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
         message.lastMessageSendDate = new Date();
         message.status = this.randomIntFromInterval(1, 10) > 4 ? MessageStatus.APPROVED : 
         this.randomIntFromInterval(1, 2) === 1 ? MessageStatus.FAILURE : MessageStatus.DECLINED;
+
+        if (message.uid) {
+          this.db.updateMessageStatus(message.uid, message.status).then(() => void 0);
+        }
       }, randTimeout);
     }
 

@@ -8,7 +8,7 @@ import { Incident } from '../model/incident';
 import { User } from '../model/user';
 import { LoginAttempt } from '../model/login-attempt';
 import { MessageTemplate } from '../model/message-template';
-import { OutgoingMessage } from '../model/message';
+import { MessageStatus, OutgoingMessage } from '../model/message';
 
 @Injectable({
     providedIn: 'root',
@@ -47,7 +47,7 @@ export class DatabaseService {
         } as LoginAttempt;
 
         return this.db
-            .collection(`login-attempts`)
+            .collection(`login`)
             .doc(uid)
             .set(attempt)
             .then(() => this.afterPutLoginAttempt(attempt))
@@ -81,7 +81,7 @@ export class DatabaseService {
         } as OutgoingMessage;
 
         return this.db
-            .collection(`outgoing-messages`)
+            .collection(`fact_message`)
             .doc(uid)
             .set(outgoing)
             .then(() => this.afterPutOutgoingMessage(outgoing))
@@ -198,7 +198,7 @@ export class DatabaseService {
 
         if (isNew) {
             return this.db
-                .collection(`incidents`)
+                .collection(`event`)
                 .doc(uid)
                 .set(incidentWithUID)
                 .then(() => this.afterPutIncident(incidentWithUID))
@@ -206,7 +206,7 @@ export class DatabaseService {
         }
             
         return this.db
-            .collection(`incidents`)
+            .collection(`event`)
             .doc(uid)
             .update(incident)
             .then(() => this.afterPutIncident(incidentWithUID))
@@ -215,7 +215,7 @@ export class DatabaseService {
 
     isIncidentExist(uid: string): Promise<boolean> {
         return this.db
-            .collection(`incidents`)
+            .collection(`event`)
             .doc(uid)
             .get()
             .toPromise()
@@ -256,11 +256,11 @@ export class DatabaseService {
     }
 
     getMessageTemplates(): Observable<MessageTemplate[]> {
-        return this.db.collection('message-templates').get().pipe(
+        return this.db.collection('message').get().pipe(
             first(),
             map(result => result.docs.map(doc => {
                 const result = <MessageTemplate>doc.data();
-                result.uid = doc.id;
+                result.message_id = doc.id;
                 return result;
             })),
             tap(templates => this.storageService.setItem('message-templates', JSON.stringify(templates))),
@@ -275,6 +275,14 @@ export class DatabaseService {
                 .delete()
                 .then(() => this.afterRemoveIncident(incident))
         }
+    }
+
+    updateMessageStatus(uid: string, status: MessageStatus): Promise<void> {
+        return this.db
+            .collection(`fact_message`)
+            .doc(uid)
+            .update({status})
+            .then(() => { return void 0 });
     }
 
     private afterRemoveIncident(incident: Incident): void {

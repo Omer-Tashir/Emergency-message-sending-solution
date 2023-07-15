@@ -5,6 +5,8 @@ export interface OutgoingMessage {
     group: string;
     type: MessageDeliveryType;
     status: MessageStatus;
+    message_message_id: string;
+    event_event_id: string;
     lastMessageSendDate: Date;
     messageCount: number;
     message: string;

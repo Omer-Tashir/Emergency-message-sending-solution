@@ -117,11 +117,17 @@ export class IncidentesComponent implements OnInit, AfterViewInit, OnDestroy {
         );
         break;
 
-      case 'date':
+      case 'event_start_date':
         this.dataSource.data = incidents.sort(
-          (a, b) => order === 'asc' ? new Date(a.date).getTime() - new Date(b.date).getTime() : new Date(b.date).getTime() - new Date(a.date).getTime()
+          (a, b) => order === 'asc' ? new Date(a.event_start_date).getTime() - new Date(b.event_start_date).getTime() : new Date(b.event_start_date).getTime() - new Date(a.event_start_date).getTime()
         );
         break;
+
+        case 'event_end_date':
+          this.dataSource.data = incidents.sort(
+            (a, b) => order === 'asc' ? new Date(a.event_end_date).getTime() - new Date(b.event_end_date).getTime() : new Date(b.event_end_date).getTime() - new Date(a.event_end_date).getTime()
+          );
+          break;
 
       case 'name':
         this.dataSource.data = incidents.sort(

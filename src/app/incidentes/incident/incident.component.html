@@ -1,83 +1,152 @@
 <app-toolbar></app-toolbar>
 
 <div class="main-section" [@fadeInOnEnter]>
-
     <div class="flex-container">
         <div class="flex-container--right">
-          <h1>{{isNewIncident ? 'הכנסת פרטי אירוע' : incident?.name}}</h1>
-          
-          <section class="form">
-            <div class="inputs-container">
-                <form *ngIf="!!form" [formGroup]="form" novalidate fxLayout="column wrap"
-                    fxLayoutAlign="center center" fxLayoutGap="10px">
-          
-                    <div class="form-inputs-wrapper">
-                        <mat-form-field>
-                            <input matInput type="text" placeholder="שם אירוע" formControlName="name">
-                            <mat-error *ngIf="hasError('name', 'required')">חובה להזין שם אירוע</mat-error>
-                        </mat-form-field>
+            <h1>{{ isNewIncident ? "הכנסת פרטי אירוע" : incident?.name }}</h1>
 
-                        <mat-form-field>
-                            <input matInput type="datetime-local" placeholder="תאריך ושעה" formControlName="date">
-                            <mat-error *ngIf="hasError('date', 'required')">חובה להזין תאריך</mat-error>
-                        </mat-form-field>
-                
-                        <mat-form-field>
-                            <mat-label>סוג אירוע</mat-label>
-                            <mat-select required formControlName="risk">
-                                <mat-option *ngFor="let incidentType of incidentTypes" [value]="incidentType">{{incidentType}}</mat-option>
-                            </mat-select>
-                            <mat-error *ngIf="hasError('risk', 'required')">חובה להזין סוג אירוע</mat-error>
-                        </mat-form-field>
+            <section class="form">
+                <div class="inputs-container">
+                    <form
+                        *ngIf="!!form"
+                        [formGroup]="form"
+                        novalidate
+                        fxLayout="column wrap"
+                        fxLayoutAlign="center center"
+                        fxLayoutGap="10px"
+                    >
+                        <div class="form-inputs-wrapper">
+                            <mat-form-field>
+                                <input
+                                    matInput
+                                    type="text"
+                                    placeholder="שם אירוע"
+                                    formControlName="name"
+                                />
+                                <mat-error *ngIf="hasError('name', 'required')"
+                                    >חובה להזין שם אירוע</mat-error
+                                >
+                            </mat-form-field>
 
-                        <mat-form-field>
-                            <mat-label>רמת סיכון</mat-label>
-                            <mat-select required formControlName="type">
-                                <mat-option *ngFor="let riskType of riskTypes" [value]="riskType">{{riskType}}</mat-option>
-                            </mat-select>
-                            <mat-error *ngIf="hasError('type', 'required')">חובה להזין רמת סיכון</mat-error>
-                        </mat-form-field>
-                    </div>
-                </form>
+                            <mat-form-field>
+                                <input
+                                    matInput
+                                    type="datetime-local"
+                                    placeholder="תאריך ושעת התחלה"
+                                    formControlName="event_start_date"
+                                />
+                                <mat-error
+                                    *ngIf="
+                                        hasError('event_start_date', 'required')
+                                    "
+                                    >חובה להזין תאריך התחלה</mat-error
+                                >
+                            </mat-form-field>
 
-                <p class="location-title">בחירת רדיוס התראה</p>
-                <span class="location-hint">* באמצעות בחירת רדיוס התראה (העיגול האדום במפה) ניתן יהיה לשייך את הטיולים הרלוונטים לאירוע זה</span>
+                            <mat-form-field>
+                                <input
+                                    matInput
+                                    type="datetime-local"
+                                    placeholder="תאריך ושעת סיום"
+                                    formControlName="event_end_date"
+                                />
+                                <mat-error
+                                    *ngIf="
+                                        hasError('event_end_date', 'required')
+                                    "
+                                    >חובה להזין תאריך התחלה</mat-error
+                                >
+                            </mat-form-field>
 
-                <agm-map [latitude]="latitude" [longitude]="longitude" [zoom]="zoom">
-                    <ng-container *ngFor="let m of markers; let i = index">
-                        <agm-marker *ngIf="!!m && m.isShown" 
-                            [latitude]="m.lat" 
-                            [longitude]="m.lng" 
-                            [label]="m.label" 
-                            [iconUrl]="m.icon">
-                            <agm-info-window>
-                                <div [innerHTML]="m.content"></div>
-                            </agm-info-window>
-                        </agm-marker>
-                    </ng-container>
-                
-                    <agm-circle 
-                        [latitude]="radiusLat" 
-                        [longitude]="radiusLong" 
-                        [radius]="radius" 
-                        [fillColor]="'red'"
-                        [circleDraggable]="true" 
-                        [editable]="true" 
-                        (dragEnd)="radiusDragEnd($event)"
-                        (radiusChange)="event('radiusChange',$event)">
-                    </agm-circle>
-                </agm-map>
-          
-                <button class="back-btn" mat-raised-button (click)="back()" color="primary">
-                    חזור
-                </button>
-                <button class="submit-btn" mat-raised-button (click)="submit()" color="primary"
-                    [disabled]="!!form && !form.valid">
-                    המשך
-                </button>
-            </div>
-          </section>
+                            <mat-form-field>
+                                <mat-label>סוג אירוע</mat-label>
+                                <mat-select required formControlName="risk">
+                                    <mat-option
+                                        *ngFor="
+                                            let incidentType of incidentTypes
+                                        "
+                                        [value]="incidentType"
+                                        >{{ incidentType }}</mat-option
+                                    >
+                                </mat-select>
+                                <mat-error *ngIf="hasError('risk', 'required')"
+                                    >חובה להזין סוג אירוע</mat-error
+                                >
+                            </mat-form-field>
+
+                            <mat-form-field>
+                                <mat-label>רמת סיכון</mat-label>
+                                <mat-select required formControlName="type">
+                                    <mat-option
+                                        *ngFor="let riskType of riskTypes"
+                                        [value]="riskType"
+                                        >{{ riskType }}</mat-option
+                                    >
+                                </mat-select>
+                                <mat-error *ngIf="hasError('type', 'required')"
+                                    >חובה להזין רמת סיכון</mat-error
+                                >
+                            </mat-form-field>
+                        </div>
+                    </form>
+
+                    <p class="location-title">בחירת רדיוס התראה</p>
+                    <span class="location-hint"
+                        >* באמצעות בחירת רדיוס התראה (העיגול האדום במפה) ניתן
+                        יהיה לשייך את הטיולים הרלוונטים לאירוע זה</span
+                    >
+
+                    <agm-map
+                        [latitude]="latitude"
+                        [longitude]="longitude"
+                        [zoom]="zoom"
+                    >
+                        <ng-container *ngFor="let m of markers; let i = index">
+                            <agm-marker
+                                *ngIf="!!m && m.isShown"
+                                [latitude]="m.lat"
+                                [longitude]="m.lng"
+                                [label]="m.label"
+                                [iconUrl]="m.icon"
+                            >
+                                <agm-info-window>
+                                    <div [innerHTML]="m.content"></div>
+                                </agm-info-window>
+                            </agm-marker>
+                        </ng-container>
+
+                        <agm-circle
+                            [latitude]="radiusLat"
+                            [longitude]="radiusLong"
+                            [radius]="radius"
+                            [fillColor]="'red'"
+                            [circleDraggable]="true"
+                            [editable]="true"
+                            (dragEnd)="radiusDragEnd($event)"
+                            (radiusChange)="event('radiusChange', $event)"
+                        >
+                        </agm-circle>
+                    </agm-map>
+
+                    <button
+                        class="back-btn"
+                        mat-raised-button
+                        (click)="back()"
+                        color="primary"
+                    >
+                        חזור
+                    </button>
+                    <button
+                        class="submit-btn"
+                        mat-raised-button
+                        (click)="submit()"
+                        color="primary"
+                        [disabled]="!!form && !form.valid"
+                    >
+                        המשך
+                    </button>
+                </div>
+            </section>
         </div>
-      </div>
-
+    </div>
 </div>

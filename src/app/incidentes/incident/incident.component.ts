@@ -113,7 +113,13 @@ export class IncidentComponent implements OnInit, OnDestroy {
     this.storageService.setItem('tripsInRadius', JSON.stringify(trips));
 
     if (this.hasChanges || this.isNewIncident) {
-      from(this.db.putIncident({...this.form.value} as Incident, this.isNewIncident)).pipe(
+      from(this.db.putIncident({
+        ...this.form.value, 
+        user_employee_number: this.user?.uid,
+        event_created_by: this.user?.username,
+        event_closed_by: '',
+        location: {latitude: this.latitude, longitude: this.longitude},
+      } as Incident, this.isNewIncident)).pipe(
         first(),
         map(incident => this.router.navigate(['sendAlert', incident.uid]))
       ).subscribe();
@@ -144,7 +150,8 @@ export class IncidentComponent implements OnInit, OnDestroy {
     this.form = new FormGroup({
       uid: new FormControl(this.incident?.uid ?? ''),
       name: new FormControl(this.incident?.name ?? '', [Validators.required]),
-      date: new FormControl(this.incident?.date ?? new Date(), [Validators.required]),
+      event_start_date: new FormControl(this.incident?.event_start_date ?? new Date(), [Validators.required]),
+      event_end_date: new FormControl(this.incident?.event_end_date ?? new Date(), [Validators.required]),
       risk: new FormControl(this.incident?.risk ?? '', [Validators.required]),
       type: new FormControl(this.incident?.type ?? '', [Validators.required]),
     });

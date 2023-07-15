@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router, ActivatedRoute } from '@angular/router';
-import { first, map, takeUntil, tap } from 'rxjs/operators';
+import { first, map, share, takeUntil, tap } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 
@@ -28,11 +28,13 @@ export class SendAlertComponent implements OnInit, OnDestroy {
   columns: string[] = ['uid', 'name', 'tutor', 'groupSize', 'currentLocation'];
   messagesColumns: string[] = ['toPhone', 'group', 'type', 'status'];
   messageTemplates$!: Observable<MessageTemplate[]>;
+  messageTemplates!: MessageTemplate[];
   dataSource!: MatTableDataSource<Trip>;
   messageTplCtrl!: FormControl;
   messagesDataSource!: MatTableDataSource<OutgoingMessage>;
   outgoingMessage!: string;
   sendingMessages = false;
+  selectedMessageId!: any;
 
   MessageStatus = MessageStatus;
 
@@ -50,10 +52,15 @@ export class SendAlertComponent implements OnInit, OnDestroy {
     this.loadIncident();
     this.loadTrips();
 
-    this.messageTemplates$ = this.db.getMessageTemplates();
+    this.messageTemplates$ = this.db.getMessageTemplates().pipe(
+      share(),
+      tap(t => this.messageTemplates = t)
+    );
+
     this.messageTplCtrl = new FormControl('');
     this.messageTplCtrl.valueChanges.pipe(
       tap(value => this.outgoingMessage = value),
+      tap(value => this.selectedMessageId = this.messageTemplates.find(m => m.message === value)?.message_id),
       takeUntil(this.destroy$)
     ).subscribe();
   }
@@ -94,7 +101,9 @@ export class SendAlertComponent implements OnInit, OnDestroy {
         toPhone: trip.tutor.phone1,
         type: trip.tutor.deliveryType,
         messageCount: 0,
-        message: this.getResolvedMessage(trip)
+        message: this.getResolvedMessage(trip),
+        event_event_id: this.incident?.uid,
+        message_message_id: this.selectedMessageId || ''
       } as OutgoingMessage
     }));
 

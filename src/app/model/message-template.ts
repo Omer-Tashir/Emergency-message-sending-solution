@@ -1,4 +1,4 @@
 export interface MessageTemplate {
-    uid: string; // PK
+    message_id: string; // PK
     message: string;
 }
