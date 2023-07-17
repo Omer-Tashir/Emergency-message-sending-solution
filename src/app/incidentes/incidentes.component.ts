@@ -26,7 +26,7 @@ export class IncidentesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  columns: string[] = ['uid', 'name', 'date'];
+  columns: string[] = ['uid', 'name', 'event_start_date', 'event_end_date'];
   dataSource: MatTableDataSource<Incident> = new MatTableDataSource<Incident>([]);
 
   days: string[] = [
